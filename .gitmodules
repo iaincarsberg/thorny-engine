@@ -4,3 +4,6 @@
 [submodule "lib/jasmine"]
 	path = lib/jasmine
 	url = git@github.com:iaincarsberg/jasmine.git
+[submodule "lib/underscore"]
+	path = lib/underscore
+	url = git://github.com/documentcloud/underscore.git
