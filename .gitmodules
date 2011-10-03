@@ -10,3 +10,6 @@
 [submodule "lib/compose"]
 	path = lib/compose
 	url = git://github.com/kriszyp/compose.git
+[submodule "lib/cjs"]
+	path = lib/cjs
+	url = git://github.com/neonstalwart/cjs.git
