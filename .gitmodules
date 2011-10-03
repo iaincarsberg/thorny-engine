@@ -13,3 +13,6 @@
 [submodule "lib/cjs"]
 	path = lib/cjs
 	url = git://github.com/neonstalwart/cjs.git
+[submodule "lib/underscore.string"]
+	path = lib/underscore.string
+	url = https://github.com/edtsech/underscore.string
