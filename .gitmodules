@@ -1,3 +1,6 @@
 [submodule "lib/requirejs"]
 	path = lib/requirejs
 	url = git://github.com/jrburke/requirejs.git
+[submodule "lib/jasmine"]
+	path = lib/jasmine
+	url = git@github.com:iaincarsberg/jasmine.git
