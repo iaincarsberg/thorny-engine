@@ -16,3 +16,6 @@
 [submodule "lib/underscore.string"]
 	path = lib/underscore.string
 	url = https://github.com/edtsech/underscore.string
+[submodule "lib/jasmine-node"]
+	path = lib/jasmine-node
+	url = git://github.com/mhevery/jasmine-node.git
