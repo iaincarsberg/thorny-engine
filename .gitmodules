@@ -19,3 +19,6 @@
 [submodule "lib/jasmine-node"]
 	path = lib/jasmine-node
 	url = git://github.com/mhevery/jasmine-node.git
+[submodule "lib/jasmine-reporters"]
+	path = lib/jasmine-reporters
+	url = git://github.com/larrymyers/jasmine-reporters.git
