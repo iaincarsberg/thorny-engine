@@ -40,6 +40,15 @@
 				},
 				{
 					/**
+					 * Used to return true, so I can do stuff like 
+					 *     if (! object.isThorny) {
+					 *       object = Compose.call(object, new Thorny());
+					 *     };
+					 * @var boolean true
+					 */
+					isThorny: true,
+					
+					/**
 					 * Used to act as a protected datastore for any object that 
 					 * needs one.
 					 * @param string hash Containing the hash of the object
@@ -140,7 +149,7 @@
 			 * @param function load Used to trigger load event
 			 * @return void
 			 */
-			thorny.load = function (target, require, load) {	
+			thorny.load = function (target, require, load) {
 				require([pathify(target)], load);
 			};
 			
