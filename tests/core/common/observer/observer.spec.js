@@ -6,7 +6,7 @@ define(
 	function (
 		observer
 	) {
-		describe('observer', function () {
+		describe('the observer class', function () {
 			it('should have the following functions', function () {
 				var
 					item = {},
@@ -14,13 +14,14 @@ define(
 
 				expect(item).toEqual(processed);
 				expect(typeof item.notify).toEqual('function');
-				
-				/*
+			});// it should have the following functions
+			
+			describe('has the following functions,', function () {
 				describe('notify', function () {
 					it('should call the notified function', function () {
 						var 
 							ran = false,
-							item = $('thorny core observer')({
+							item = observer({
 								dance: function () {
 									ran = true;
 								}
@@ -30,19 +31,19 @@ define(
 						expect(ran).toBeTruthy();
 					});// it should call the notified function
 
-					it('shouldnt error if an event is called that isnt within the observer object', function () {
+					it("shouldn't error if an event is called that isnt within the observer object", function () {
 						var 
 							ran = true,
-							item = $('thorny core observer')({});
+							item = observer({});
 
 						expect(item.notify('dance')).toBeFalsy();
 						expect(ran).toBeTruthy();
-					});// it shouldnt error if an event is called that isnt within the observer object
+					});// it shouldn't error if an event is called that isnt within the observer object
 
 					it('should surpress any errors', function () {
 						var 
 							errored = false,
-							item = $('thorny core observer')({
+							item = observer({
 								dance: function () {
 									throw new Error('Surpressed error!!!');
 								}
@@ -60,7 +61,7 @@ define(
 					it('should execute the notifyHandler if one is set, and an exception is encountered', function () {
 						var 
 							ran = false,
-							item = $('thorny core observer')({
+							item = observer({
 								throwsError: function () {
 									throw new Error('Surpressed error!!!');
 								},
@@ -74,8 +75,7 @@ define(
 						expect(ran).toBeTruthy();
 					});// it should execute the notifyHandler if one is set, and an exception is encountered
 				});// desc notify
-				*/
-			});// it should have the following functions
+			});// desc has the following functions,
 		});// desc observer
 	}
 );

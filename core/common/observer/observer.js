@@ -23,8 +23,11 @@ define(
 				 * @return void
 				 */
 				notify: function (eventName, observable) {
-					// If our target isn't observable then make it...
-					if (! observable.isObservable) {
+					// If our target isn't observable then make it... 
+					//      ...(but only if its actually an object)...
+					if (typeof observable === 'object' &&
+						! observable.isObservable
+					) {
 						makeObservable(observable);
 					}
 					
