@@ -22,3 +22,6 @@
 [submodule "lib/jasmine-node"]
 	path = lib/jasmine-node
 	url = git://github.com/iaincarsberg/jasmine-node.git
+[submodule "lib/JSON-js"]
+	path = lib/JSON-js
+	url = git://github.com/douglascrockford/JSON-js.git
