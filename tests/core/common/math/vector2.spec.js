@@ -1,4 +1,3 @@
-/*global console window describe it expect runs waitsFor*/
 /*global define console window describe it expect runs waitsFor*/
 define(
 	[
@@ -8,7 +7,7 @@ define(
 		Vector2
 	) {	
 		describe('The vector2 object', function () {
-			it('should have a number of helper functions, and Compose.js helpers', function () {
+			it('it should have a number of helper functions, and Compose.js helpers', function () {
 				var 
 					ran = false;
 				
@@ -24,12 +23,12 @@ define(
 				}, 'thorny!math/vector2 failed to load');
 			});// it should have a number of helper functions, and Compose.js helpers
 			
-			describe('creating a new Vector2', function () {
-				it('should expose the following functions', function () {
+			describe('once instantiated', function () {
+				it('it should expose the following functions', function () {
 					var 
 						ran = false,
 						v2 = new Vector2(0, 0);
-
+					
 					expect(typeof v2.getX).toEqual('function');
 					expect(typeof v2.getY).toEqual('function');
 					expect(typeof v2.getSimpleCoords).toEqual('function');
@@ -55,9 +54,9 @@ define(
 					}, 'thorny!math/vector2 failed to load');
 				});// it should expose the following functions
 				
-				describe('the exposed Vector2 instance functions', function () {
+				describe('should have a function called', function () {
 					describe('getX', function () {
-						it('should correctly expose the x value', function () {
+						it('it should correctly expose the x value', function () {
 							var 
 								ran = false,
 								v1 = new Vector2(10, 0),
@@ -80,7 +79,7 @@ define(
 					});// desc getX
 					
 					describe('getY', function () {
-						it('should correctly expose the y value', function () {
+						it('it should correctly expose the y value', function () {
 							var 
 								ran = false,
 								v1 = new Vector2(0, 10),
@@ -103,7 +102,7 @@ define(
 					});// desc getY
 					
 					describe('getSimpleCoords', function () {
-						it('should expose an array containing the x/y values stored within the vector2', function () {
+						it('it should expose an array containing the x/y values stored within the vector2', function () {
 							var 
 								ran = false,
 								v1 = new Vector2(0, 0),
@@ -126,7 +125,7 @@ define(
 					});// desc getSimpleCoords
 
 					describe('getIntegerCoords', function () {
-						it('should convert the decimal point accurate vector into integers', function () {
+						it('it should convert the decimal point accurate vector into integers', function () {
 							var ran = false;
 							
 							expect(new Vector2(10, 10).getIntegerCoords()).toEqual([10, 10]);
@@ -143,7 +142,7 @@ define(
 					});// desc getIntegerCoords
 
 					describe('normalize', function () {
-						it('should normalise a vector', function () {
+						it('it should normalise a vector', function () {
 							var ran = false;
 							
 							expect(new Vector2(10, 0).normalize().getSimpleCoords()).toEqual([1, 0]);
@@ -164,7 +163,7 @@ define(
 					});// desc normalize
 
 					describe('add', function () {
-						it('should add two vectors together resulting in a 3rd', function () {
+						it('it should add two vectors together resulting in a 3rd', function () {
 							var ran = false;
 							
 							expect(
@@ -215,7 +214,7 @@ define(
 					});// desc add
 
 					describe('sub', function () {
-						it('should subtract two vectors from one another and return a third', function () {
+						it('it should subtract two vectors from one another and return a third', function () {
 							var ran = false;
 							
 							expect(
@@ -266,7 +265,7 @@ define(
 					});// desc sub
 
 					describe('translate', function () {
-						it('should move a vector by a set amount', function () {
+						it('it should move a vector by a set amount', function () {
 							var ran = false;
 							
 							expect(
@@ -304,7 +303,7 @@ define(
 					});// desc translate
 
 					describe('cross', function () {
-						it('should return the crossed value of a vector', function () {
+						it('it should return the crossed value of a vector', function () {
 							var ran = false;
 							
 							expect(
@@ -350,7 +349,7 @@ define(
 					});// desc cross
 
 					describe('dot', function () {
-						it('should find the dot product of two vectors', function () {
+						it('it should find the dot product of two vectors', function () {
 							var ran = false;
 							
 							expect(
@@ -389,7 +388,7 @@ define(
 					});// desc dot
 
 					describe('magnitude', function () {
-						it('should return the magnitude of a vector', function () {
+						it('it should return the magnitude of a vector', function () {
 							var ran = false;
 						
 							expect(
@@ -410,7 +409,7 @@ define(
 					});// desc magnitude
 
 					describe('distance', function () {
-						it('should find the distance between two points', function () {
+						it('it should find the distance between two points', function () {
 							var ran = false;
 							
 							expect(
@@ -442,7 +441,7 @@ define(
 					});// desc distance
 
 					describe('sameAs', function () {
-						it('should match the internal values within the vector', function () {
+						it('it should match the internal values within the vector', function () {
 							var ran = false;
 							
 							expect(
@@ -479,7 +478,7 @@ define(
 							}, 'thorny!math/vector2: sameAs failed');
 						});// it should match the internal values within the vector
 
-						it('shouldnt match the following', function () {
+						it('it shouldnt match the following', function () {
 							var ran = false;
 							
 							expect(
@@ -518,7 +517,7 @@ define(
 					});// desc sameAs
 
 					describe('rotate', function () {
-						it('should allow you to rotate a vector', function () {
+						it('it should allow you to rotate a vector', function () {
 							var ran = false;
 							
 							/**
@@ -580,7 +579,7 @@ define(
 					});// desc rotate
 
 					describe('angle', function () {
-						it('should return the angle between two vectors', function () {
+						it('it should return the angle between two vectors', function () {
 							var 
 								ran = false,
 								degRad = Math.PI / 180;
@@ -623,7 +622,7 @@ define(
 					});// desc angle
 
 					describe('rotateToFace', function () {
-						it('should rotate a vector so that it faces a specific location', function () {
+						it('it should rotate a vector so that it faces a specific location', function () {
 							var ran = false;
 							
 							expect(
@@ -679,7 +678,7 @@ define(
 					});// desc rotateToFace
 
 					describe('toRadians', function () {
-						it('should convert degrees to radians', function () {
+						it('it should convert degrees to radians', function () {
 							var 
 								ran = false,
 								degRad = Math.PI / 180;
@@ -697,7 +696,7 @@ define(
 					});// desc toRadians
 
 					describe('clone', function () {
-						it('should duplicate a vector2 into a new vector2', function () {
+						it('it should duplicate a vector2 into a new vector2', function () {
 							var ran = false,
 								v1 = new Vector2(34, 66);
 
@@ -720,8 +719,152 @@ define(
 							}, 'thorny!math/vector2: clone failed');
 						});// it should duplicate a vector2 into a new vector2
 					});// desc clone
-				});// desc the exposed Vector2 instance functions
-			});// desc creating a new Vector2
+				});// desc should have a function called
+			});// desc once instantiated
+			
+			describe('its utility function,', function () {
+				describe('lineIntersection', function () {
+					it('it should detect a valid intersection between two lines in a cross', function () {
+						var
+							v1 = new Vector2(0, 0),
+							v2 = new Vector2(10, 10),
+							v3 = new Vector2(10, 0),
+							v4 = new Vector2(0, 10);
+
+						expect(
+							Vector2.lineIntersection(v1, v2, v3, v4)
+								.getSimpleCoords()
+							).toEqual([5, 5]);
+					});// it should detect a valid intersection between two lines in a cross
+
+					it('it should detect a valid intersection between two lines in a cross', function () {
+						var
+							v1 = new Vector2(5, 0),
+							v2 = new Vector2(5, 10),
+							v3 = new Vector2(0, 5),
+							v4 = new Vector2(10, 5);
+
+						expect(
+							Vector2.lineIntersection(v1, v2, v3, v4)
+								.getSimpleCoords()
+							).toEqual([5, 5]);
+					});// it should detect a valid intersection between two lines in a cross
+
+					it("should't detect any intersection", function () {
+						var
+							v1 = new Vector2(0, 0),
+							v2 = new Vector2(0, 10),
+							v3 = new Vector2(10, 0),
+							v4 = new Vector2(10, 10);
+
+						expect(
+							Vector2.lineIntersection(v1, v2, v3, v4)
+							).toBeFalsy();
+					});// it should't detect any intersection
+
+					it("should't detect any intersection", function () {
+						var
+							v1 = new Vector2(0, 0),
+							v2 = new Vector2(10, 10),
+							v3 = new Vector2(10, 0),
+							v4 = new Vector2(5.1, 4.9);
+
+						expect(
+							Vector2.lineIntersection(v1, v2, v3, v4)
+							).toBeFalsy();
+					});// it should't detect any intersection
+				});// endof lineIntersection
+				
+				describe('centroid', function () {
+					it('it should find the centroid in a 3 sided polygone', function () {
+						var
+							v1 = new Vector2(0, 0),
+							v2 = new Vector2(10, 0),
+							v3 = new Vector2(10, 10);
+
+						expect(
+							Vector2.centroid(v1, v2, v3)
+								.getIntegerCoords()
+							).toEqual([7, 3]);
+					});// it should find the centroid in a 3 sided polygone
+					
+					it('it should find the centroid in a 4 sided polygon', function () {
+						expect(
+							Vector2.centroid(
+								new Vector2(0, 0),
+								new Vector2(10, 0),
+								new Vector2(10, 10),
+								new Vector2(0, 10)
+								).getIntegerCoords()
+						).toEqual([5, 5]);
+					});// should find the centroid in a 4 sided polygon
+					
+					it('it should find the centroid in a 5 sided polygon', function () {
+						expect(
+							Vector2.centroid(
+								new Vector2(3, 0),
+								new Vector2(7, 0),
+								new Vector2(10, 5),
+								new Vector2(5, 10),
+								new Vector2(0, 5)
+								).getIntegerCoords()
+						).toEqual([5, 3]);
+					});// should find the centroid in a 5 sided polygon
+					
+					it('it should find the centroid in a 6 sided polygon', function () {
+						expect(
+							Vector2.centroid(
+								new Vector2(3, 0),
+								new Vector2(7, 0),
+								new Vector2(10, 5),
+								new Vector2(7, 10),
+								new Vector2(3, 10),
+								new Vector2(0, 5)
+								).getIntegerCoords()
+						).toEqual([5, 5]);
+					});// should find the centroid in a 6 sided polygon
+				});// endof centroid
+				
+				describe('isLeftOfEdge', function () {
+					it('it should determine which side of a line a point is', function () {
+						expect(
+							Vector2
+								.isLeftOfEdge(
+									new Vector2(10, 1), 
+									new Vector2(20, 0), 
+									new Vector2(0, 0)
+									)
+							).toBeTruthy();
+						
+						expect(
+							Vector2
+								.isLeftOfEdge(
+									new Vector2(10, -1), 
+									new Vector2(20, 0), 
+									new Vector2(0, 0)
+									)
+							).toBeFalsy();
+
+						expect(
+							Vector2
+								.isLeftOfEdge(
+									new Vector2(11, 10), 
+									new Vector2(10, 20), 
+									new Vector2(10, 0)
+									)
+							).toBeFalsy();
+							
+						expect(
+							Vector2
+								.isLeftOfEdge(
+									new Vector2(9, 10), 
+									new Vector2(10, 20), 
+									new Vector2(10, 0)
+									)
+							).toBeTruthy();
+					});// it should determine which side of a line a point is
+				});// endof isLeftOfEdge
+			});// desc its utility function,
 		});// desc The vector2 object
 	}
 );
