@@ -1,15 +1,15 @@
 /*global define*/
 define(
 	[
-		'compose'
+		'thorny'
 	], 
 	function (
-		Compose
+		Thorny
 	) {
-		var Vector2 = Compose(
+		var Vector2 = Thorny.extend(
 			function (x, y) {
-				this.x = x;
-				this.y = y;
+				this.setX(x);
+				this.setY(y);
 			},
 			{
 				/**
@@ -18,7 +18,7 @@ define(
 				 * @return double Containing the x value
 				 */
 				getX: function () {
-					return this.x;
+					return this.data('x');
 				},
 				
 				/**
@@ -27,7 +27,27 @@ define(
 				 * @return double Containing the x value
 				 */
 				getY: function () {
-					return this.y;
+					return this.data('y');
+				},
+				
+				/**
+				 * Used to set the x coordinate
+				 * @param float x Contains the x
+				 * @return this, to allow object chaning
+				 */
+				setX: function (x) {
+					this.data('x', x);
+					return this;
+				},
+				
+				/**
+				 * Used to set the y coordinate
+				 * @param float y Contains the y
+				 * @return this, to allow object chaning
+				 */
+				setY: function (y) {
+					this.data('y', y);
+					return this;
 				},
 				
 				/**
@@ -36,7 +56,7 @@ define(
 				 * @return Vector2 Containing a duplicate of this Vector2
 				 */
 				clone: function () {
-					return new Vector2(this.x, this.y);
+					return new Vector2(this.getX(), this.getY());
 				},
 				
 				/**
@@ -45,7 +65,7 @@ define(
 				 * @return array Containing the vector
 				 */
 				getSimpleCoords: function () {
-					return [this.x, this.y];
+					return [this.getX(), this.getY()];
 				},
 				
 				/**
@@ -54,7 +74,7 @@ define(
 				 * @return array Containing an integer version of the vector
 				 */
 				getIntegerCoords: function () {
-					return [Math.round(this.x), Math.round(this.y)];
+					return [Math.round(this.getX()), Math.round(this.getY())];
 				},
 
 				/**
@@ -63,13 +83,13 @@ define(
 				 * @return this, to allow object chaining
 				 */
 				normalize: function () {
-					var dist = Math.sqrt((this.x * this.x) + (this.y * this.y));
+					var dist = Math.sqrt((this.getX() * this.getX()) + (this.getY() * this.getY()));
 					if (dist > 0) {
 						dist = 1 / dist;
 					}
 					
-					this.x *= dist;
-					this.y *= dist;
+					this.setX(this.getX() * dist);
+					this.setY(this.getY() * dist);
 					return this;
 				},
 
@@ -79,8 +99,8 @@ define(
 				 * @return this, to allow object chaining
 				 */
 				add: function (v) {
-					this.x += v.getX();
-					this.y += v.getY();
+					this.setX(this.getX() + v.getX());
+					this.setY(this.getY() + v.getY());
 					return this;
 				},
 
@@ -90,8 +110,8 @@ define(
 				 * @return this, to allow object chaining
 				 */
 				sub: function (v) {
-					this.x -= v.getX();
-					this.y -= v.getY();
+					this.setX(this.getX() - v.getX());
+					this.setY(this.getY() - v.getY());
 					return this;
 				},
 
@@ -104,8 +124,8 @@ define(
 				translate: function (facing, distance) {
 					var v = facing.clone().normalize();
 					
-					this.x += (v.getX() * distance);
-					this.y += (v.getY() * distance);
+					this.setX(this.getX() + v.getX() * distance);
+					this.setY(this.getY() + v.getY() * distance);
 					return this;
 				},
 
@@ -115,7 +135,7 @@ define(
 				 * @return this, to allow object chaining
 				 */
 				cross: function (v) {
-					return (this.x * v.getY()) - (this.y * v.getX());
+					return (this.getX() * v.getY()) - (this.getY() * v.getX());
 				},
 
 				/**
@@ -124,7 +144,7 @@ define(
 				 * @return double Containing the dot product
 				 */
 				dot: function (v) {
-					return (this.x * v.getX()) + (this.y * v.getY());
+					return (this.getX() * v.getX()) + (this.getY() * v.getY());
 				},
 
 				/**
@@ -133,7 +153,7 @@ define(
 				 * @return double Containing the magnitude
 				 */
 				magnitude: function () {
-					return Math.sqrt((this.x * this.x) + (this.y * this.y));
+					return Math.sqrt((this.getX() * this.getX()) + (this.getY() * this.getY()));
 				},
 
 				/**
@@ -142,8 +162,8 @@ define(
 				 * @return double Containing the distance between two vectors
 				 */
 				distance: function (v) {
-					var xx = (v.getX() - this.x),
-						yy = (v.getY() - this.y);
+					var xx = (v.getX() - this.getX()),
+						yy = (v.getY() - this.getY());
 					return Math.sqrt((xx * xx) + (yy * yy));
 				},
 
@@ -154,7 +174,7 @@ define(
 				 * @return float Containing the angle to a specific vector
 				 */
 				angle: function (v) {
-					return (Math.atan2(v.getY(), v.getX()) - Math.atan2(this.y, this.x));
+					return (Math.atan2(v.getY(), v.getX()) - Math.atan2(this.getY(), this.getX()));
 				},
 
 				/**
@@ -163,7 +183,7 @@ define(
 				 * @return boolean If the parsed param matches true, otherwise false
 				 */
 				sameAs: function (v) {
-					if (this.x === v.getX() && this.y === v.getY()) {
+					if (this.getX() === v.getX() && this.getY() === v.getY()) {
 						return true;
 					}
 					return false;
@@ -184,8 +204,8 @@ define(
 						sa = Math.sin(n);
 
 						// And translate the position.
-					this.x = v.getX() * ca - v.getY() * sa;
-					this.y = v.getX() * sa + v.getY() * ca;
+					this.setX(v.getX() * ca - v.getY() * sa);
+					this.setY(v.getX() * sa + v.getY() * ca);
 					return this; 
 				},
 
@@ -197,8 +217,8 @@ define(
 				rotateToFace: function (vector) {
 					var v = this.clone().sub(vector).normalize();
 
-					this.x = v.getX() * -1;
-					this.y = v.getY() * -1;
+					this.setX(v.getX() * -1);
+					this.setY(v.getY() * -1);
 					return this;
 				},
 
@@ -268,29 +288,52 @@ define(
 
 		/**
 		 * Used to find the centroid of a poly.
-		 * @param Vector2 v2 Contains the second point in a poly
-		 * @param Vector2 v3 Contains the third point in a poly
+		 * @param vararg Vector2 Parse in as many vectors as you like, and 
+		 *        this will find the centroid of your convex shape.
 		 * @return Vector2 Containing the centroid of a shape
 		 */
-		Vector2.centroid = function (v1, v2, v3) {
-			var 
-				/**
-				 * Used to find the midpoint along an edge of the poly
-				 * @param p1 Contains a vector
-				 * @param p2 Contains a vector
-				 * @return Vector2 Containing a mid point for a poly
-				 */
-				findEdgeMp = function (p1, p2) {
-					return p1.clone().translate(
-						p2.clone().sub(p1),
-						(p1.distance(p2) / 2)
+		Vector2.centroid = function () {
+			/**
+			 * Used to find the midpoint along an edge of the poly
+			 * @param p1 Contains a vector
+			 * @param p2 Contains a vector
+			 * @return Vector2 Containing a mid point for a poly
+			 */
+			function findEdgeMp(p1, p2) {
+				return p1.clone().translate(
+					p2.clone().sub(p1),
+					(p1.distance(p2) / 2)
+				);
+			}
+			
+			var
+				args = arguments.length,
+				opposite;
+			
+			// Makesure our shape has enough detail.
+			if (args < 3) {
+				throw new Error("Can only find the centroid with >= 3 Vector2's");
+			}
+			
+			// Check to see if we're dealing
+			if (args % 2 === 0) {// Even
+				opposite = args / 2;
+				return this.lineIntersection(
+					arguments[0],
+					arguments[opposite],
+					arguments[1],
+					arguments[opposite + 1]
 					);
-				},
-
-				mp1 = findEdgeMp(v1, v2),
-				mp2 = findEdgeMp(v2, v3);
-
-			return this.lineIntersection(v1, mp2, v3, mp1);
+				
+			} else {// Odd
+				opposite = Math.ceil(args / 2);
+				return this.lineIntersection(
+					arguments[0],
+					findEdgeMp(arguments[opposite - 1], arguments[opposite]),
+					arguments[1],
+					findEdgeMp(arguments[opposite], arguments[(opposite + 1) % args])
+					);
+			}
 		};
 
 		/**
