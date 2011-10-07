@@ -8,13 +8,29 @@ header("Cache-Control: max-age=0, no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: Wed, 11 Jan 1984 05:00:00 GMT");
 
-/*
-/tests/core/common/math/poly2.spec.js
-/tests/core/common/math/vector2.spec.js
-/tests/core/common/observer/observable-observer.spec.js
-/tests/core/common/observer/observable.spec.js
-/tests/core/common/observer/observer.spec.js
-/tests/thorny.spec.js
-*/
-?>
-/tests/thorny.spec.js
+function findAllUnitTests ($directory, $files=array()) {
+	$contents = scandir($directory);
+	
+	foreach ($contents as $key) {
+		if (in_array($key, array('.', '..'))) {
+			continue;
+		}
+		$path = sprintf('%s/%s', $directory, $key);
+		
+		if (is_dir($path)) {
+			$files = findAllUnitTests($path, $files);
+			
+		} else if (
+			is_file($path) &&
+			substr($path, -8) === '.spec.js'
+		) {
+			$files[] = '/tests' . str_replace(dirname(__FILE__), '', $path);
+		}
+	}
+	
+	return $files;
+};
+
+foreach (findAllUnitTests(dirname(__FILE__)) as $path) {
+	echo $path . "\n";
+}

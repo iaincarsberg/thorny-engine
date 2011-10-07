@@ -87,15 +87,6 @@ if (typeof window === 'undefined') {
 			'./lib/requirejs/text!./tests/list.php'
 		],
 		function (list) {
-			list = [
-				'./tests/core/common/math/poly2.spec.js',
-				'./tests/core/common/math/vector2.spec.js',
-				'./tests/core/common/observer/observable-observer.spec.js',
-				'./tests/core/common/observer/observable.spec.js',
-				'./tests/core/common/observer/observer.spec.js',
-				'./tests/thorny.spec.js'
-			].join("\n");
-			
 			require(list.split("\n"), function () {
 				//run tests
 				jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
