@@ -1,5 +1,6 @@
 /*global window console*/
 (function (require, undefined) {
+	return;
 	require(
 		[
 			'thorny',
@@ -66,30 +67,23 @@
 	);
 }(typeof window === 'undefined' ? require('./lib/r') : require));
 (function (require, undefined) {
-	return;
-	/*
 	require(
 		[
-			'thorny!math/vector2',
-			'thorny!common>math/vector2',
-			'thorny!core>common>math/vector2',
-			'thorny!core>math/vector2'
+			'thorny!math/poly2',
+			'thorny!math/vector2'
 		], 
 		function (
-			Vector2,
-			v2,
-			v3,
-			v4
+			Poly2,
+			Vector2
 		) {
-			console.log(
-				'**',
-				typeof Vector2,
-				typeof v2,
-				typeof v3,
-				typeof v4,
-				'**'
-				);
+			var p2 = new Poly2(
+				new Vector2(0, 0),
+				new Vector2(10, 0),
+				new Vector2(10, 10),
+				new Vector2(0, 10)
+			);
+			
+			console.log('Poly2:', p2);
 		}
 	);
-	*/
 }(typeof window === 'undefined' ? require('./lib/r') : require));
