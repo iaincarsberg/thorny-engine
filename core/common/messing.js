@@ -1,12 +1,10 @@
 /*global define*/
 define(
 	[
-		'thorny',
-		'compose'
+		'thorny'
 	], 
 	function (
-		Thorny,
-		Compose
+		Thorny
 	) {
 		return Thorny.extend(
 			{
