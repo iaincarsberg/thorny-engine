@@ -82,6 +82,57 @@ define(
 					
 				});// it should return the correct number of triggered observers
 			});// desc notifyObservers
+			
+			describe('the observers ability to observe an observable', function () {
+				it('should show an observer observing an observable', function () {
+					var 
+						warnings = 0,
+						arrested = false,
+						police = observer({
+							thatWereDealingWithAPeepingTom: function () {
+								arrested = true;
+							}
+						}),
+						stalker = observer({
+							youveBeenCaughtPeeping: function () {
+								// Have the police create a file on this 
+								// vial stalker.
+								police.observe(this);
+								
+								// Warn the perp
+								warnings += 1;
+								
+								// If he's been warn to often, then deal with 
+								// him :)
+								if (warnings >= 3) {
+									this.notifyObservers('thatWereDealingWithAPeepingTom');
+								}
+							}
+						}),
+						victim1 = observable({}),
+						victim2 = observable({}),
+						victim3 = observable({});
+
+					// Observe the entites, so we can catch there deletion.
+					stalker
+						.observe(victim1)
+						.observe(victim2)
+						.observe(victim3);
+					
+					victim1.notifyObservers('youveBeenCaughtPeeping');
+					expect(arrested).toBeFalsy();
+					
+					victim2.notifyObservers('youveBeenCaughtPeeping');
+					expect(arrested).toBeFalsy();
+					
+					victim3.notifyObservers('youveBeenCaughtPeeping');
+					expect(arrested).toBeTruthy();
+
+					expect(warnings).toMatch(3);
+					
+					
+				});// it should show an observer observing an observable
+			});// desc the observers ability to observe an observable
 		});//desc observer and observerable interaction
 	}
 );

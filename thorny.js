@@ -133,7 +133,7 @@
 				if (project) {
 					path.unshift(project);
 				}
-
+				
 				// And turn it into a string
 				return path.join('/');
 			});

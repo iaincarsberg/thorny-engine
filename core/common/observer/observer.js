@@ -17,6 +17,24 @@ define(
 		return function (subject) {
 			return Compose.call(subject, {
 				/**
+				 * Used to observe another object.
+				 * @param observable observable Contains an observable object
+				 * @return this, to allow object chaining
+				 */
+				observe: function (observable) {
+					// If our target isn't observable then make it... 
+					//      ...(but only if its actually an object)...
+					if (typeof observable === 'object' &&
+						! observable.isObservable
+					) {
+						makeObservable(observable);
+					}
+					
+					observable.addObserver(this);
+					return this;
+				},
+				
+				/**
 				 * Used to execute an event on the observer
 				 * @param string eventName Contains the name of the triggered event
 				 * @param object observable Contains the thing we're looking at
