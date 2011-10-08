@@ -92,7 +92,7 @@
 					platform,
 					platforms = ['browser', 'node.js', 'common', '*'],
 					path;
-
+				
 				// Populate the path details.
 				if (bits.length === 4) {
 					project  = bits[0];
@@ -108,7 +108,7 @@
 
 				} else if (bits.length === 2) {
 					project  = false;
-					module   = 'core';
+					module   = underscore.include(platforms, bits[0]) ? 'core' : bits[0];
 					platform = underscore.include(platforms, bits[0]) ? bits[0] : 'common';
 					path     = bits[1];
 
