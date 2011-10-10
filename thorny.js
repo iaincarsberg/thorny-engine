@@ -10,7 +10,8 @@
 			cjs:                 'lib/cjs/cjs',
 			text:                'lib/requirejs/text',
 			jsonw:               'lib/JSON-wrapper/jsonw',
-			json:                'lib/JSON-js/json2'
+			json:                'lib/JSON-js/json2',
+			order:               'lib/requirejs/order'
 		}
 	});
 	
