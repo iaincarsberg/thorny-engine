@@ -102,11 +102,28 @@
 					path     = bits[3];
 
 				} else if (bits.length === 3) {
-					project  = false;
-					module   = underscore.include(platforms, bits[0]) ? bits[1] : bits[0];
-					platform = underscore.include(platforms, bits[0]) ? bits[0] : bits[1];
-					path     = bits[2];
-
+					// Check to see if the platform has been specified
+					if (! underscore.include(platforms, bits[0]) &&
+						! underscore.include(platforms, bits[1]) &&
+						! underscore.include(platforms, bits[2])
+					) {
+						// If it hasn't then the 0th element is the project,
+						// and the 1st is the module, and the path is the 2nd
+						project  = bits[0];
+						module   = bits[1];
+						platform = 'common';
+						path     = bits[2];
+						
+					} else {
+						// If it has been set, then the 0th element is the 
+						// module, the 1st is the platform, and the 2nd is the
+						// path
+						project  = false;
+						module   = underscore.include(platforms, bits[0]) ? bits[1] : bits[0];
+						platform = underscore.include(platforms, bits[0]) ? bits[0] : bits[1];
+						path     = bits[2];
+					}
+					
 				} else if (bits.length === 2) {
 					project  = false;
 					module   = underscore.include(platforms, bits[0]) ? 'core' : bits[0];
