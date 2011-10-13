@@ -49,9 +49,11 @@ if (typeof window === 'undefined') {
 	global.define   = require('./lib/r');
 	
 	//make jasmine available globally like it is in the browser
-	global.describe = require(jasminePath).describe;
-	global.it       = require(jasminePath).it;
-	global.expect   = function (actual) {
+	global.describe  = require(jasminePath).describe;
+	global.xdescribe = require(jasminePath).xdescribe;
+	global.it        = require(jasminePath).it;
+	global.xit       = require(jasminePath).xit;
+	global.expect    = function (actual) {
 		// Fudge in a dot for each assertition.
 		printedOnRow += 1;
 		process.stdout.write('.');
@@ -64,6 +66,8 @@ if (typeof window === 'undefined') {
 		return require(jasminePath).expect(actual);
 	};
 	global.waitsFor = require(jasminePath).waitsFor;
+	global.waits    = require(jasminePath).waits;
+	global.runs     = require(jasminePath).runs;
 	
 	//bring in and list all the tests to be run
 	requirejs(
