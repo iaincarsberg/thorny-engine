@@ -68,6 +68,21 @@ define(
 					expect(runs).toMatch(3);
 					
 				});// it should be removeable
+				
+				describe('how it handles the execution of functions used to augment and complete a new Entity', function () {
+					console.log('TODO main.spec.js Unittest the augment/instantiated process');
+					xit('it should call any bound augment functions', function () {
+						
+					});// it should call any bound augment functions
+					
+					xit('it should call any bound instantiated functions', function () {
+						
+					});// it should call any bound instantiated functions
+					
+					xit('it should call both augment, and then instantiated functions', function () {
+						
+					});// it should call both augment, and then instantiated functions
+				});// desc how it handles the execution of functions used to augment and complete a new Entity
 			});// desc once instantiated
 		});// desc The Entity-System Base Object
 	}
