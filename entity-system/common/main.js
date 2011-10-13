@@ -5,25 +5,29 @@ define(
 		'thorny',
 		'thorny!observer/observer',
 		'thorny!observer/observable',
+		'cjs!underscore',
 		
+		// Addons
 		'thorny!entity-system>tag',
-		'thorny!entity-system>component'
+		'thorny!entity-system>component',
+		'thorny!entity-system>templatable'
 	], 
 	function (
 		require,
 		Thorny,
 		observer,
 		observable,
-		Tag,
-		Component
+		underscore
 	) {
-		var main, entities = [], augments = [], addons = [];
+		var i, ii, Main, entities = [], augments = [], completers = [], addons = [];
 		
-		// Add the addons to the list...
-		addons.push(Tag);
-		addons.push(Component);
+		// Catch all the addon arguments
+		for (i = 5, ii = arguments.length; i < ii; i += 1) {
+			addons.push(arguments[i]);
+		}
 		
-		main = Thorny.extend(
+		// Produce the main object
+		Main = Thorny.extend(
 			function () {
 				// Create a unique entity id
 				this.data('id', entities.length);
@@ -32,9 +36,20 @@ define(
 				observable(this);
 				
 				// Apply the augments to the new entity
-				var i, ii;
+				var i, ii, args = underscore.toArray(arguments);
 				for (i = 0, ii = augments.length; i < ii; i += 1) {
 					augments[i](this);
+				}
+				
+				// Apply any completion checks, these, are called after an 
+				// entity has been augmented, allowing the system to check for
+				// specific internal states, and run required code against 
+				// them. Was designed to manage stuff like 
+				//   new Entity(Entity.TEMPLATE)
+				// which should execute code to make this entity a template 
+				// automatically, and without further involvement.
+				for (i = 0, ii = completers.length; i < ii; i += 1) {
+					completers[i](this, args);
 				}
 				
 				// Store a reference of this entity in the private store.
@@ -68,14 +83,18 @@ define(
 		 * @param int entityId Contains an entity id
 		 * @return object Containing an entity
 		 */
-		main.getEntity = function (id) {
+		Main.getEntity = function (id) {
 			return (entities[id]) ? entities[id] : false;
 		};
 		
 		// Create a closure to handle the addons.
-		(function (addons) {/*using arguments*/
+		(function (addons) {
 			var i, ii, augmentEntity, augmentSystem;
 			
+			/**
+			 * Utility object, to make a nice and tidy api for the component 
+			 * system's implementation
+			 */
 			augmentEntity = {
 				/**
 				 * Used to augment an entity
@@ -84,11 +103,26 @@ define(
 				 */
 				augment: function (mixin) {
 					augments.push(function (entity) {
-						mixin(entity);
+						mixin(entity, Main);
+					});
+				},
+				
+				/**
+				 * Called when an object is instantiated
+				 * @param function callback, called upon instantiation
+				 * @return void
+				 */
+				instantiated: function (callback) {
+					completers.push(function (entity, args) {
+						callback(entity, args, Main);
 					});
 				}
 			};
 			
+			/**
+			 * Utility object, to make a nice and tidy api for the component 
+			 * system's implementation
+			 */
 			augmentSystem = {
 				/**
 				 * Used to augment the system
@@ -97,11 +131,11 @@ define(
 				 * @return void
 				 */
 				augment: function (name, functionality) {
-					if (main[name] !== undefined) {
+					if (Main[name] !== undefined) {
 						throw new Error("Cannot replace existing entity-system functionality, '" + name + "'");
 					}
 					
-					main[name] = functionality;
+					Main[name] = functionality;
 				}
 			};
 			
@@ -114,6 +148,6 @@ define(
 			}
 		}(addons));
 		
-		return main;
+		return Main;
 	}
 );
