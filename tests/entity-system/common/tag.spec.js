@@ -2,13 +2,11 @@
 define(
 	[
 		'thorny',
-		'thorny!entity-system>main',
-		'thorny!observer/observer'
+		'thorny!entity-system>main'
 	],
 	function (
 		Thorny,
-		Entity,
-		observer
+		Entity
 	) {	
 		describe('The Entity-System Base Object', function () {
 			describe('before instantiation', function () {

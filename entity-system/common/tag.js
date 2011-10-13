@@ -12,7 +12,15 @@ define(
 			tagEntity = {},
 			entityTag = {};
 		
-		// return augmentation functions
+		/**
+		 * Used to allow entities to be tagged, and retived via the applied 
+		 * access tag.
+		 * @param object instance Contains a hook to inject functionality into
+		 * each and every new Entity();
+		 * @param object system Contains a hook in inject functionality into
+		 * the entity-system
+		 * @return void
+		 */
 		return function (instance, system) {
 			/**
 			 * Used to create a system to tag entities, allowing easy and 
