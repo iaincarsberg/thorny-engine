@@ -88,9 +88,13 @@ if (typeof window === 'undefined') {
 } else {
 	require(
 		[
+			'./thorny',
 			'./lib/requirejs/text!./tests/list.php'
 		],
-		function (list) {
+		function (
+			Thorny, 
+			list
+		) {
 			require(list.split("\n"), function () {
 				//run tests
 				jasmine.getEnv().addReporter(new jasmine.TrivialReporter());
