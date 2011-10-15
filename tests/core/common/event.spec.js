@@ -2,11 +2,13 @@
 define(
 	[
 		'thorny',
-		'thorny!event'
+		'thorny!event',
+		'thorny!entity-system>main'
 	],
 	function (
 		Thorny,
-		event
+		event,
+		Entity
 	) {	
 		describe('The Event Object', function () {
 			it('should have the following functions', function () {
@@ -70,18 +72,16 @@ define(
 					 * before you load them, which looks odd. Belated events lets
 					 * the code logically flow.
 					 */
-					console.log('event.spec.js:belated events - Port the Entity-System');
-					/*
 					var helloWorld = false;
-					es().makeEntity()
-						.triggers('hello-world');
-
-					event.bind('hello-world', function () {
+					
+					new Entity()
+						.triggers('event:belated');
+					
+					event.bind('event:belated', function () {
 						helloWorld = true;
 					});
 					
 					expect(helloWorld).toBeTruthy();
-					*/
 				});//it should have the following functions
 			});// desc belated events
 		});// desc The Event Object
