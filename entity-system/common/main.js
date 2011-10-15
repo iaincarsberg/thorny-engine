@@ -10,7 +10,8 @@ define(
 		// Addons
 		'thorny!entity-system>tag',
 		'thorny!entity-system>component',
-		'thorny!entity-system>templatable'
+		'thorny!entity-system>templatable',
+		'thorny!entity-system>trigger'
 	], 
 	function (
 		require,
