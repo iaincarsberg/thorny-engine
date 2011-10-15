@@ -3,6 +3,7 @@ define(
 	[
 		'thorny',
 		'thorny!entity-system>main',
+		'cjs!underscore',
 		
 		// Add some fixture componets to make testing possible.
 		'thorny!tests/fixtures>entity-system>helloworld.component',
@@ -14,7 +15,8 @@ define(
 	],
 	function (
 		Thorny,
-		Entity
+		Entity,
+		underscore
 	) {
 		describe('The Entity-System Base Object', function () {
 			describe('before instantiation', function () {
@@ -74,7 +76,329 @@ define(
 					});// desc registerComponent
 					
 					describe('searchByComponents', function () {
-						console.log('TODO component.spec - searchByComponents');
+						it('should have the following functions', function () {
+							Entity.registerComponent('searchByComponents:1', function (entity) {
+								return {
+									name: 'searchByComponents:1',
+									isUnique: true,
+									attach: function (pass) {
+										return true;
+									}
+								};
+							});
+							
+							new Entity().addComponent('searchByComponents:1');
+							
+							expect(Entity.searchByComponents('searchByComponents:1') instanceof Array).toBeTruthy();
+							expect(typeof Entity.searchByComponents('searchByComponents:1')).toEqual('object');
+							expect(typeof Entity.searchByComponents('searchByComponents:1').length).toEqual('number');
+							expect(typeof Entity.searchByComponents('searchByComponents:1').each).toEqual('function');
+							expect(typeof Entity.searchByComponents('searchByComponents:1').first).toEqual('function');
+						});//it should have the following functions
+
+						it("should preform a simple map operation and return the result", function () {
+							Entity.registerComponent('searchByComponents:2', function (entity) {
+								return {
+									name: 'searchByComponents:2',
+									isUnique: true,
+									attach: function (pass) {
+										return true;
+									}
+								};
+							});
+							
+							var 
+								i,	// Used for loop control
+								ii,	// Used for loop control as a limit
+								results,
+								e01 = new Entity().addComponent('searchByComponents:2'),
+								e02 = new Entity().addComponent('searchByComponents:2'),
+								e03 = new Entity().addComponent('searchByComponents:2'),
+								e04 = new Entity().addComponent('searchByComponents:2'),
+								e05 = new Entity().addComponent('searchByComponents:2'),
+								e06 = new Entity().addComponent('searchByComponents:2'),
+								e07 = new Entity().addComponent('searchByComponents:2'),
+								e08 = new Entity().addComponent('searchByComponents:2'),
+								e09 = new Entity().addComponent('searchByComponents:2'),
+								e10 = new Entity().addComponent('searchByComponents:2');
+							
+							results = Entity.searchByComponents('searchByComponents:2');
+
+							// Makesure there are 10 results
+							expect(results.length).toMatch(10);
+							
+							expect(results[0]).toMatch(e01);
+							expect(results[1]).toMatch(e02);
+							expect(results[2]).toMatch(e03);
+							expect(results[3]).toMatch(e04);
+							expect(results[4]).toMatch(e05);
+							expect(results[5]).toMatch(e06);
+							expect(results[6]).toMatch(e07);
+							expect(results[7]).toMatch(e08);
+							expect(results[8]).toMatch(e09);
+							expect(results[9]).toMatch(e10);
+						});// it should preform a simple map operation and return the result
+
+						it("should preform a more complex map operation and return the result", function () {
+							underscore.each(['a', 'b', 'c'], function (key) {
+								Entity.registerComponent('searchByComponents:3:' + key, function (entity) {
+									return {
+										name: 'searchByComponents:3:' + key,
+										isUnique: true,
+										attach: function (pass) {
+											return true;
+										}
+									};
+								});
+							});
+							
+							var
+								entityA = new Entity()
+									.addComponent('searchByComponents:3:a'),
+								entityAB = new Entity()
+									.addComponent('searchByComponents:3:a')
+									.addComponent('searchByComponents:3:b'),
+								entityABC = new Entity()
+									.addComponent('searchByComponents:3:a')
+									.addComponent('searchByComponents:3:b')
+									.addComponent('searchByComponents:3:c'),
+								entityBC = new Entity()
+									.addComponent('searchByComponents:3:b')
+									.addComponent('searchByComponents:3:c'),
+								entityC = new Entity()
+									.addComponent('searchByComponents:3:c');
+
+							expect(Entity.searchByComponents('searchByComponents:3:a').length)
+								.toMatch(3);
+							expect(Entity.searchByComponents('searchByComponents:3:b').length)
+								.toMatch(3);
+							expect(Entity.searchByComponents('searchByComponents:3:c').length)
+								.toMatch(3);
+							expect(Entity.searchByComponents('searchByComponents:3:a', 'searchByComponents:3:b').length)
+								.toMatch(2);
+							expect(Entity.searchByComponents('searchByComponents:3:b', 'searchByComponents:3:a').length)
+								.toMatch(2);
+							expect(Entity.searchByComponents('searchByComponents:3:a', 'searchByComponents:3:c').length)
+								.toMatch(1);
+							expect(Entity.searchByComponents('searchByComponents:3:c', 'searchByComponents:3:a').length)
+								.toMatch(1);
+							expect(Entity.searchByComponents('searchByComponents:3:b', 'searchByComponents:3:c').length)
+								.toMatch(2);
+							expect(Entity.searchByComponents('searchByComponents:3:c', 'searchByComponents:3:b').length)
+								.toMatch(2);
+							expect(Entity.searchByComponents('searchByComponents:3:a', 'searchByComponents:3:b', 'searchByComponents:3:c').length)
+								.toMatch(1);
+							expect(Entity.searchByComponents('searchByComponents:3:b', 'searchByComponents:3:a', 'searchByComponents:3:c').length)
+								.toMatch(1);
+							expect(Entity.searchByComponents('searchByComponents:3:c', 'searchByComponents:3:b', 'searchByComponents:3:a').length)
+								.toMatch(1);
+						});// it should preform a more complex map operation and return the result
+
+						describe('has an each function', function () {
+							it("should map the required compoents into the each callback, testing with only unique componets", function () {
+								underscore.each(['a', 'b', 'c'], function (key) {
+									Entity.registerComponent('searchByComponents:each:unique:' + key, function (entity) {
+										return {
+											name: 'component ' + key,
+											isUnique: true,
+											attach: function (pass) {
+												return true;
+											}
+										};
+									});
+								});
+								
+								var entites, e1, e2;
+								e1 = new Entity()
+									.tag('entity 1')
+									.addComponent('searchByComponents:each:unique:a')
+									.addComponent('searchByComponents:each:unique:b')
+									.addComponent('searchByComponents:each:unique:c');
+								e2 = new Entity()
+									.tag('entity 2')
+									.addComponent('searchByComponents:each:unique:a')
+									.addComponent('searchByComponents:each:unique:b')
+									.addComponent('searchByComponents:each:unique:c');
+									
+								entites = ['entity 1', 'entity 2'];
+								Entity
+									.searchByComponents('searchByComponents:each:unique:a')
+									.each(function (a) {
+										expect(Entity.getTag(entites.shift()).id)
+											.toEqual(this.id);
+
+										expect(a.name)
+											.toEqual('component a');
+									});
+									
+								entites = ['entity 1', 'entity 2'];
+								Entity
+									.searchByComponents('searchByComponents:each:unique:a', 'searchByComponents:each:unique:b')
+									.each(function (a, b) {
+										expect(Entity.getTag(entites.shift()).id)
+											.toEqual(this.id);
+
+										expect(a.name)
+											.toEqual('component a');
+										expect(b.name)
+											.toEqual('component b');
+									});
+
+								entites = ['entity 1', 'entity 2'];
+								Entity
+									.searchByComponents('searchByComponents:each:unique:a', 'searchByComponents:each:unique:b', 'searchByComponents:each:unique:c')
+									.each(function (a, b, c) {
+										expect(Entity.getTag(entites.shift()).id)
+											.toEqual(this.id);
+
+										expect(a.name)
+											.toEqual('component a');
+										expect(b.name)
+											.toEqual('component b');
+										expect(c.name)
+											.toEqual('component c');
+									});
+							});// should map the required compoents into the each callback, testing with only unique componets
+							
+							it("should map the required compoents into the each callback, testing with only non-unique componets", function () {
+								underscore.each(['a', 'b', 'c'], function (key) {
+									Entity.registerComponent('searchByComponents:each:non-unique:' + key, function (entity) {
+										return {
+											name: 'component ' + key,
+											isUnique: false,
+											attach: function (pass) {
+												return true;
+											}
+										};
+									});
+								});
+								
+								var entites, tag, e1, e2;
+								e1 = new Entity()
+									.tag('entity 1')
+									.addComponent('searchByComponents:each:non-unique:a')
+									.addComponent('searchByComponents:each:non-unique:a')
+									.addComponent('searchByComponents:each:non-unique:b')
+									.addComponent('searchByComponents:each:non-unique:b')
+									.addComponent('searchByComponents:each:non-unique:c')
+									.addComponent('searchByComponents:each:non-unique:c');
+								e2 = new Entity()
+									.tag('entity 2')
+									.addComponent('searchByComponents:each:non-unique:a')
+									.addComponent('searchByComponents:each:non-unique:a')
+									.addComponent('searchByComponents:each:non-unique:a')
+									.addComponent('searchByComponents:each:non-unique:b')
+									.addComponent('searchByComponents:each:non-unique:b')
+									.addComponent('searchByComponents:each:non-unique:b')
+									.addComponent('searchByComponents:each:non-unique:c')
+									.addComponent('searchByComponents:each:non-unique:c')
+									.addComponent('searchByComponents:each:non-unique:c');
+									
+								entites = [{name: 'entity 1', count: 2}, {name: 'entity 2', count: 3}];
+								Entity
+									.searchByComponents('searchByComponents:each:non-unique:a')
+									.each(function (a) {
+										tag = entites.shift();
+										expect(Entity.getTag(tag.name).id)
+											.toEqual(this.id);
+
+										expect(a.length).toEqual(tag.count);
+										expect(typeof a.each).toEqual('function');
+										
+										a.each(function (comp) {
+											expect(comp.name).toEqual('component a');
+										});
+									});
+									
+								entites = [{name: 'entity 1', count: 2}, {name: 'entity 2', count: 3}];
+								Entity
+									.searchByComponents('searchByComponents:each:non-unique:a', 'searchByComponents:each:non-unique:b')
+									.each(function (a, b) {
+										tag = entites.shift();
+										expect(Entity.getTag(tag.name).id)
+											.toEqual(this.id);
+
+										expect(a.length).toEqual(tag.count);
+										expect(b.length).toEqual(tag.count);
+										expect(typeof a.each).toEqual('function');
+										expect(typeof b.each).toEqual('function');
+										
+										a.each(function (comp) {
+											expect(comp.name).toEqual('component a');
+										});
+										b.each(function (comp) {
+											expect(comp.name).toEqual('component b');
+										});
+									});
+
+								entites = [{name: 'entity 1', count: 2}, {name: 'entity 2', count: 3}];
+								Entity
+									.searchByComponents('searchByComponents:each:non-unique:a', 'searchByComponents:each:non-unique:b', 'searchByComponents:each:non-unique:c')
+									.each(function (a, b, c) {
+										tag = entites.shift();
+										expect(Entity.getTag(tag.name).id)
+											.toEqual(this.id);
+
+										expect(a.length).toEqual(tag.count);
+										expect(b.length).toEqual(tag.count);
+										expect(c.length).toEqual(tag.count);
+										expect(typeof a.each).toEqual('function');
+										expect(typeof b.each).toEqual('function');
+										expect(typeof c.each).toEqual('function');
+										
+										a.each(function (comp) {
+											expect(comp.name).toEqual('component a');
+										});
+										b.each(function (comp) {
+											expect(comp.name).toEqual('component b');
+										});
+										c.each(function (comp) {
+											expect(comp.name).toEqual('component c');
+										});
+									});
+							});// should map the required compoents into the each callback, testing with only non-unique componets
+						});// desc has an each function
+
+						describe('has a first function', function () {
+							it("should map the required compoents into the each callback", function () {
+								underscore.each(['a', 'b', 'c'], function (key) {
+									Entity.registerComponent('searchByComponents:first:' + key, function (entity) {
+										return {
+											name: 'component ' + key,
+											isUnique: true,
+											attach: function (pass) {
+												return true;
+											}
+										};
+									});
+								});
+								
+								var runs = 0;
+								new Entity()
+									.tag('entity 1')
+									.addComponent('searchByComponents:first:a')
+									.addComponent('searchByComponents:first:b')
+									.addComponent('searchByComponents:first:c');
+								new Entity()
+									.tag('entity 2')
+									.addComponent('searchByComponents:first:a')
+									.addComponent('searchByComponents:first:b')
+									.addComponent('searchByComponents:first:c');
+
+								Entity
+									.searchByComponents('searchByComponents:first:a')
+									.first(function (a) {
+										expect(Entity.getTag('entity 1').id)
+											.toEqual(this.id);
+										expect(a.name)
+											.toEqual('component a');
+
+										runs += 1;
+									});
+								
+								expect(runs).toEqual(1);
+							});// it should preform a more complex map operation and return the result
+						});// desc has an each function
 					});// desc searchByComponents
 					
 					describe('componentExists', function () {

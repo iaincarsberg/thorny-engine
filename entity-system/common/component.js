@@ -2,11 +2,13 @@
 define(
 	[
 		'compose',
-		'thorny'
+		'thorny',
+		'cjs!underscore'
 	], 
 	function (
 		Compose,
-		Thorny
+		Thorny,
+		underscore
 	) {
 		var 
 			components = {},
@@ -51,6 +53,14 @@ define(
 							
 							// Invoke the new component.
 							component = component(entity);
+							
+							if (component === undefined) {
+								throw new Error(
+									'entity.addComponent(' + name + ', "' + 
+									JSON.stringify(options) + '"); "' + name + 
+									'" is not a correctly defined component.'
+								);
+							}
 							
 							// If a component is unique then it can only be added once.
 							if (component.isUnique !== undefined &&
@@ -194,12 +204,90 @@ define(
 			});
 			
 			/**
-			 * Used to find all entities with a specific component.
-			 * @param void
-			 * @return this, to allow object chaining
+			 * Used to search for a list of entities that have the 
+			 * required components.
+			 * @param vararg Contains the names of components that may be
+			 * attached to entities.
+			 * @return array of Entities that have the reqested component
 			 */
 			system.augment('searchByComponents', function () {
-				return this;
+				var 
+					that = this,
+					varargs = underscore.toArray(arguments),
+					collection;
+				
+				// Build a list of entities that contain all of the components.
+				collection = underscore
+					.map(
+						entityComponent,
+						function (c, entity_id) {
+							return that.getEntity(entity_id);
+						})
+					.reduce(function (collection, entity, id) {
+						var valid = true;
+						underscore.each(
+							varargs,
+							function (requirement) {
+								if (! valid) {
+									return;
+								}
+								
+								valid = entity.hasComponent(requirement);
+							});
+						
+						if (valid) {
+							collection.push(entity);
+						}
+						
+						return collection;
+					}, []);
+				
+				return Compose.call(
+					collection,
+					{
+						/**
+						 * Used to allow easy process of attached data.
+						 * @param function callback Called on each item 
+						 * within the return component list.
+						 * @return void
+						 */
+						each: function (callback) {
+							underscore.each(this, function (entity) {
+								var params = [], component;
+								underscore.each(varargs, function (required) {
+									component = entity.getComponent(required);
+									if (component.length === 1) {
+										component = component[0];
+									}
+									params.push(component);
+								});
+								callback.apply(entity, params);
+							});
+						},
+
+						/**
+						 * Used to allow easy access to the first item in
+						 * the collection
+						 * @param function callback Called on the first 
+						 * item within the return component list.
+						 * @return void
+						 */
+						first: function (callback) {
+							if (this.length === 0) {
+								return;
+							}
+							
+							var params = [], entity = this[0];
+							underscore.each(varargs, function (required) {
+								component = entity.getComponent(required);
+								if (component.length === 1) {
+									component = component[0];
+								}
+								params.push(component);
+							});
+							callback.apply(entity, params);
+						}
+					});
 			});
 			
 			/**
