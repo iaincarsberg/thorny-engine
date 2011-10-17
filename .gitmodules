@@ -25,3 +25,6 @@
 [submodule "lib/JSON-js"]
 	path = lib/JSON-js
 	url = git://github.com/douglascrockford/JSON-js.git
+[submodule "lib/flow-js"]
+	path = lib/flow-js
+	url = https://github.com/willconant/flow-js.git
