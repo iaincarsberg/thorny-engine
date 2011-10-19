@@ -12,7 +12,7 @@ define(
 		event,
 		underscore
 	) {
-		var postponeTrigger = {};
+		//var postponeTrigger = {};
 		
 		/**
 		 * Used to allow entities to be tagged, and retived via the applied 
@@ -41,9 +41,48 @@ define(
 						 * @return this to allow object chaining
 						 */
 						triggers: function () {
-							underscore.each(underscore.toArray(arguments), function (arg) {
-								event.trigger(arg, true);
-							});
+							var 
+								/**
+								 * Contains the arguments parsed into the 
+								 * triggers method
+								 * @var array
+								 */
+								args = underscore.toArray(arguments),
+								
+								/**
+								 * Used to trigger the events
+								 * @param array events Contains
+								 * @param array data Contains data that needs
+								 *        piping into the triggered event.
+								 * @return void
+								 */
+								trigger = function (events, data) {
+									// Convert the data into an array
+									data = underscore.toArray(data);
+									
+									// And place the entity at the beginning 
+									// of the data array.
+									data.unshift(entity);
+									
+									underscore.each(events, function (evnt) {
+										event.trigger(evnt, true, data);
+									});
+								};
+							
+							// Check to see if the flow-js-handle componet
+							// has been attached to this entity. If it has 
+							// then we need to handle the event triggering a 
+							// bit differently.
+							if (entity.hasComponent('flow-js-handle')) {
+								entity.getComponent('flow-js-handle')[0]
+									.flowExec(function () {
+										trigger(args, underscore.toArray(arguments));	
+									});
+								
+							} else {
+								trigger(args);
+							}
+							
 							return this;
 							
 							/*
