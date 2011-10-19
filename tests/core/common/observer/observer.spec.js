@@ -74,6 +74,26 @@ define(
 						expect(item.notify('throwsError')).toBeTruthy();
 						expect(ran).toBeTruthy();
 					});// it should execute the notifyHandler if one is set, and an exception is encountered
+					
+					it('it should accept an optional 3rd parmiter, and explode that into local scope', function () {
+						var 
+							someObject = {},
+							ran = false,
+							item = observer({
+								testermatic: function (one, two, three, four, five) {
+									expect(one).toEqual(1);
+									expect(two).toEqual(2);
+									expect(three).toEqual(3);
+									expect(four).toEqual(4);
+									expect(five).toEqual(5);
+									expect(this).toEqual(someObject);
+									
+									ran = true;
+								}
+							});
+						expect(item.notify('testermatic', someObject, [1, 2, 3, 4, 5])).toBeTruthy();
+						expect(ran).toBeTruthy();
+					});// it should accept an optional 3rd parmiter, and explode that into local scope
 				});// desc notify
 			});// desc has the following functions,
 		});// desc observer

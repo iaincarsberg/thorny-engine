@@ -58,10 +58,12 @@ define(
 				/**
 				 * Used to notify any observers
 				 * @param string eventName Contains the type of event that just 
-				 * happened.
+				 *        happened.
+				 * @param optional data Contains data that needs sending to 
+				 *        the notified observers.
 				 * @return int Containing the number of executed events
 				 */
-				notifyObservers: function (eventName) {
+				notifyObservers: function (eventName, data) {
 					var
 						executed = 0, // Contains the number of executed observers
 						i,			  // Used for loop control
@@ -73,7 +75,7 @@ define(
 						// chain of update, so we surpress any errors.
 						try {
 							// Notify the observers
-							if (observers[i].notify(eventName, this)) {
+							if (observers[i].notify(eventName, this, data)) {
 								// If something was notified then incroment  
 								// the executed counter.
 								executed += 1;

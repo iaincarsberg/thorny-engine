@@ -109,6 +109,38 @@ define(
 						o.notifyObservers('dance');
 						expect(hasRan).toBeTruthy();	
 					});// it should add an observer to its internal collection
+					
+					it('it should accept an optional second paramiter that populate the event with data', function () {
+						var 
+							hasRan = false,
+							subject = {
+								dance: function (one, two, three, four, five) {
+									expect(one).toEqual(1);
+									expect(two).toEqual(2);
+									expect(three).toEqual(3);
+									expect(four).toEqual(4);
+									expect(five).toEqual(5);
+									// expect(this).toEqual(someObject);
+									
+									hasRan = true;
+								},
+								notify: function (eventName, observable, data) {
+									
+									if (typeof this[eventName] === 'function') {
+										try {
+											this[eventName].apply(observable, data);
+										} catch (e) {
+											// Do nothing
+										}
+									}
+								}
+							},
+							o = observable({});
+
+						o.addObserver(subject);
+						o.notifyObservers('dance', [1, 2, 3, 4, 5]);
+						expect(hasRan).toBeTruthy();
+					});// it should accept an optional second paramiter that populate the event with data
 				});//desc notifyObservers
 			});// desc has the following functions,
 		});// desc observable

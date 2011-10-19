@@ -2,11 +2,13 @@
 define(
 	[
 		'compose',
-		'thorny!observer/observable'
+		'thorny!observer/observable',
+		'cjs!underscore'
 	], 
 	function (
 		Compose,
-		makeObservable
+		makeObservable,
+		underscore
 	) {
 		/**
 		 * Allows an object to observe another object
@@ -38,9 +40,10 @@ define(
 				 * Used to execute an event on the observer
 				 * @param string eventName Contains the name of the triggered event
 				 * @param object observable Contains the thing we're looking at
+				 * @param optional data Contains event specific data
 				 * @return void
 				 */
-				notify: function (eventName, observable) {
+				notify: function (eventName, observable, data) {
 					// If our target isn't observable then make it... 
 					//      ...(but only if its actually an object)...
 					if (typeof observable === 'object' &&
@@ -53,7 +56,11 @@ define(
 						// We dont want any of the observer to break anything not
 						// related to it, so we surpress any errors.
 						try {
-							this[eventName](observable);
+							if (! underscore.isArray(data)) {
+								data = [data];
+							}
+							
+							this[eventName].apply(observable, data);
 							return true;
 						} catch (e) {
 							// Surpress any errors that are caused by our
