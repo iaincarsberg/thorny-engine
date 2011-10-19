@@ -41,33 +41,63 @@ define(
 			});// desc during instantiation
 			
 			describe('once instantiated', function () {
-				describe('it should be removeable', function () {
-					var 
-						runs = 0,
-						removalChecker,
-						e1 = new Entity(),
-						e2 = new Entity(),
-						e3 = new Entity();
+				it('it should have the following functions', function () {
+					var e = new Entity();
 					
-					removalChecker = observer({
-						entityRemoved: function () {
-							runs += 1;
-						}
-					});
-					
-					// Observe the entites, so we can catch there deletion.
-					removalChecker
-						.observe(e1)
-						.observe(e2)
-						.observe(e3);
-					
-					e1.delete();
-					e2.delete();
-					e3.delete();
-					
-					expect(runs).toMatch(3);
-					
-				});// it should be removeable
+					expect(typeof e.getId).toEqual('function');
+					expect(typeof e.delete).toEqual('function');
+				});// it should have the following functions
+				
+				describe('getId', function () {
+					it('it should return an incromenting id', function () {
+						var
+							e1 = new Entity(),
+							e2 = new Entity(),
+							e3 = new Entity();
+						
+						expect(e1.getId() + 1).toEqual(e2.getId());
+						expect(e1.getId() + 2).toEqual(e3.getId());
+						expect(e2.getId() + 1).toEqual(e3.getId());
+					});// it should return an incromenting id
+				});// desc getId
+				
+				describe('delete', function () {
+					describe('it should call the listening entityRemoved listener', function () {
+						var 
+							runs = 0,
+							removalChecker,
+							e1 = new Entity(),
+							e2 = new Entity(),
+							e3 = new Entity();
+						
+						removalChecker = observer({
+							entityRemoved: function (entity) {
+								expect(entity instanceof Entity).toBeTruthy();
+								
+								// This is the wrong way around, but we're 
+								// making an array of allowable results, and
+								// checking to see if our returned id is 
+								// within the allowed range.
+								expect([e1.getId(), e2.getId(), e3.getId()])
+									.toContain(entity.getId());
+
+								runs += 1;
+							}
+						});
+
+						// Observe the entites, so we can catch there deletion.
+						removalChecker
+							.observe(e1)
+							.observe(e2)
+							.observe(e3);
+						
+						e1.delete();
+						e2.delete();
+						e3.delete();
+
+						expect(runs).toMatch(3);
+					});// it should call the listening entityRemoved listener
+				});// desc delete
 			});// desc once instantiated
 		});// desc The Entity-System Base Object
 	}

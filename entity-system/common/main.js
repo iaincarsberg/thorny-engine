@@ -11,7 +11,10 @@ define(
 		'thorny!entity-system>tag',
 		'thorny!entity-system>component',
 		'thorny!entity-system>templatable',
-		'thorny!entity-system>trigger'
+		'thorny!entity-system>trigger',
+		
+		// Components
+		'thorny!entity-system>flow-js-handle.component'
 	], 
 	function (
 		require,
@@ -73,8 +76,9 @@ define(
 				 * @triggers entityRemoved
 				 */
 				delete: function () {
-					this.notifyObservers('entityRemoved');
-					entities[this.data('id')] = undefined;
+					this.notifyObservers('entityRemoved', entities[this.data('id')]);
+					
+					delete entities[this.data('id')];
 				}
 			}
 		);
@@ -117,6 +121,22 @@ define(
 					completers.push(function (entity, args) {
 						callback(entity, args, Main);
 					});
+				},
+				
+				/**
+				 * Used to bind a callback, that listens to the deletion of an
+				 * entity within the system
+				 * @param function callback, called upon deletion
+				 * @return void
+				 */
+				delete: function (callback) {
+					completers.push(function (entity) {
+						// Create a new observer, and bind the callback into 
+						// it, then observe the entity.
+						observer({
+							entityRemoved: callback
+						}).observe(entity);
+					});
 				}
 			};
 			
@@ -125,6 +145,10 @@ define(
 			 * system's implementation
 			 */
 			augmentSystem = {
+				// Drop the whole entity into the system augmenter, encase we
+				// need direct access to it ever.
+				Entity: Main,
+				
 				/**
 				 * Used to augment the system
 				 * @param string name Contains the name of the functionality
