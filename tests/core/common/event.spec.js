@@ -54,6 +54,23 @@ define(
 					expect(eatLotsOfCake).toBeTruthy();
 					expect(calls).toEqual(6);
 				});//it should allow us to bind and trigger events in the system
+				
+				it('it should allow us to send a 3rd paramiter, and have that be applied to the callbacks params', function () {
+					var ran = false;
+					event.bind('some-event-with-loads-of-params', function (one, two, three, four, five) {
+						expect(one).toEqual(1);
+						expect(two).toEqual(2);
+						expect(three).toEqual(3);
+						expect(four).toEqual(4);
+						expect(five).toEqual(5);
+						
+						ran = true;
+					});
+					
+					event.trigger('some-event-with-loads-of-params', false, [1, 2, 3, 4, 5]);
+					
+					expect(ran).toBeTruthy();
+				});// it should allow us to send a 3rd paramiter, and have that be applied to the callbacks params
 			});// desc the bind and trigger functions
 
 			describe('belated events', function () {

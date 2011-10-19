@@ -51,11 +51,14 @@ define(
 				 * Used to trigger an event
 				 * @param string eventType Contains the type of event being triggered
 				 * @param boolean|undefined belatable True if this event is belatable,
-				 * otherwise False|undefined
+				 *        otherwise False|undefined
+				 * @param optional array data Contains event specific data
+				 * @param optional object context Contains the object that 
+				 *        will be refered to as 'this' from the observer scope.
 				 * @return void
 				 */
-				trigger: function (eventType, belatable) {
-					var executed = this.notifyObservers(eventType);
+				trigger: function (eventType, belatable, data) {
+					var executed = this.notifyObservers(eventType, data);
 
 					// If no events we're triggered then we have a belated event.
 					if (belatable === true && executed === 0) {
