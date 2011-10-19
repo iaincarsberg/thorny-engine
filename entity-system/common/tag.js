@@ -2,11 +2,13 @@
 define(
 	[
 		'compose',
-		'thorny'
+		'thorny',
+		'cjs!underscore'
 	], 
 	function (
 		Compose,
-		Thorny
+		Thorny,
+		underscore
 	) {
 		var
 			tagEntity = {},
@@ -91,6 +93,16 @@ define(
 					}
 				);
 			});
+			
+			instance.delete(function (entity) {
+				// Remove each of the tagged references to the entity
+				underscore.each(entityTag[entity.getId()], function (value, key) {
+					delete tagEntity[key];
+				});
+				
+				// Then remove each of the entites refernces to a tag
+				delete entityTag[entity.getId()];
+			});// instance.delete
 			
 			/**
 			 * Used to fetch tagged entities.

@@ -39,7 +39,12 @@ define(
 						addComponent: function (name) {
 							var 
 								component = components[name],
-								options = Array.prototype.slice.call(arguments);
+								
+								// Will contain data if were doing an async 
+								// componet attach
+								componentAttachData,
+								attached,
+								options = underscore.toArray(arguments);
 
 							// Remove the name of the vararg
 							options.shift();
@@ -83,14 +88,39 @@ define(
 							// If the component instance has an attach 
 							// function, then run it
 							if (component.attach) {
+								// Attach the component to the entity.
+								attached = component.attach.apply(
+									component,
+									options
+									);
+								
+								// If when attaching the componet a function 
+								// was returned then it means this component
+								// has an asyncronus component, so go and do
+								// what was requested.
+								if (underscore.isFunction(attached)) {
+									// If this entity doesn't have the flow-js-handle, add it.
+									if (! entity.hasComponent('flow-js-handle')) {
+										entity.addComponent('flow-js-handle');
+									}
+									
+									// We're now going to append this flow-js request.
+									entity.getComponent('flow-js-handle')[0].flowAppend(function () {
+										componentAttachData = underscore.toArray(arguments);
+										componentAttachData.unshift(component);
+										
+										attached.apply(this, componentAttachData);
+									});
+								}
+								
 								// If the component === false then it means it 
 								// wasn't attached to the entity.
-								if (component.attach.apply(component, options) === false) {
+								if (attached === false) {
 									throw new Error(
 										'entity.addComponent(' + name + ', "' + JSON.stringify(options) + '"); Failed to attach to the entity.'
 									);
 								}
-
+								
 								// Remove the attach method from the component.
 								delete component.attach;
 							}
@@ -186,6 +216,16 @@ define(
 				);
 			});
 			
+			instance.delete(function (entity) {
+				underscore.each(entityComponent[entity.getId()], function (component) {
+					if (underscore.isFunction(component.delete)) {
+						component.delete();
+					}
+				});
+				
+				delete entityComponent[entity.getId()];
+			});// instance.delete
+			
 			/**
 			 * Used to register a component with the component entity-system
 			 * @param string name Contains the name of the newly registered 
@@ -277,7 +317,7 @@ define(
 								return;
 							}
 							
-							var params = [], entity = this[0];
+							var params = [], entity = this[0], component;
 							underscore.each(varargs, function (required) {
 								component = entity.getComponent(required);
 								if (component.length === 1) {

@@ -233,6 +233,11 @@ define(
 				}
 			});// instance.instantiated
 			
+			instance.delete(function (entity) {
+				delete templates[entity.getId()];
+				delete components[entity.getId()];
+			});// instance.delete
+			
 			/*
 			We may need to check contants inside the module, and with no 
 			reference to the Entity object, we have to localise the data.
