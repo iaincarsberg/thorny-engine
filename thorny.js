@@ -11,7 +11,8 @@
 			text:                'lib/requirejs/text',
 			jsonw:               'lib/JSON-wrapper/jsonw',
 			json:                'lib/JSON-js/json2',
-			order:               'lib/requirejs/order'
+			order:               'lib/requirejs/order',
+			flow:                'lib/flow-js/flow'
 		}
 	});
 	
