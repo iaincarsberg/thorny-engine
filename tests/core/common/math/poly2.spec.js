@@ -9,12 +9,42 @@ define(
 		Vector2
 	) {	
 		describe('The Poly2 Object', function () {
-			it('should have a number of helper functions, and Compose.js helpers', function () {
-				expect(typeof Poly2).toEqual('function');// Because it has a constructer
-				expect(typeof Poly2.extend).toEqual('function');
-				expect(typeof Poly2.findAngles).toEqual('function');
-				expect(typeof Poly2.findDistanceFromLineSegment).toEqual('function');
-			});// it should have a number of helper functions, and Compose.js helpers
+			describe('before instantiation', function () {
+				it('should have a number of helper functions, and Compose.js helpers', function () {
+					expect(typeof Poly2).toEqual('function');// Because it has a constructer
+					expect(typeof Poly2.extend).toEqual('function');
+					expect(typeof Poly2.findAngles).toEqual('function');
+					expect(typeof Poly2.findDistanceFromLineSegment).toEqual('function');
+					expect(typeof Poly2.getLength).toEqual('function');
+				});// it should have a number of helper functions, and Compose.js helpers
+				
+				describe('discribe', function () {
+					describe('the getLength function', function () {
+						it('it should return the number of Vector2s in a simple Poly2', function () {
+							var poly2 = new Poly2(
+								new Vector2(0, 0),
+								new Vector2(10, 0),
+								new Vector2(10, 10)
+								);
+							
+							expect(Poly2.getLength(poly2)).toEqual(3);
+						});// it should return the number of Vector2s in a simple Poly2
+						
+						it('it should return the number of Vector2s in a complex Poly2', function () {
+							var poly2 = new Poly2(
+								new Vector2(3, 0),
+								new Vector2(7, 0),
+								new Vector2(10, 5),
+								new Vector2(7, 10),
+								new Vector2(3, 10),
+								new Vector2(0, 5)
+								);
+							
+							expect(Poly2.getLength(poly2)).toEqual(6);
+						});// it should return the number of Vector2s in a complex Poly2
+					});// desc the getLength function
+				});// desc discribe
+			});// desc before instantiation
 			
 			describe('once instantiated', function () {
 				describe('will find its centroid', function () {
@@ -38,6 +68,17 @@ define(
 								).getIntegerCoords()
 						).toEqual([5, 5]);
 					});// should find the centroid in a 4 sided polygon
+					
+					it("it should find the centroid in a 4 sided polygon that isn't on 0-0", function () {
+						expect(
+							new Poly2(
+								new Vector2(100, 0),
+								new Vector2(110, 0),
+								new Vector2(110, 10),
+								new Vector2(100, 10)
+								).getIntegerCoords()
+						).toEqual([105, 5]);
+					});
 					
 					it('it should find the centroid in a 5 sided polygon', function () {
 						expect(
@@ -227,6 +268,66 @@ define(
 
 							expect(p1.sharesEdge(p3)).toBeFalsy();
 						});// it shouldn't detect a shared edge
+						
+						it('it should detect, and correctly label a shared edge using a simple dataset', function () {
+							var 
+								v1 = new Vector2(0, 0),
+								v2 = new Vector2(0, 100),
+								v3 = new Vector2(100, 0),
+								v4 = new Vector2(100, 100),
+								v5 = new Vector2(150, 100),
+								
+								p1 = new Poly2(
+									v1.clone(), 
+									v2.clone(), 
+									v3.clone()
+									),
+								p2 = new Poly2(
+									v2.clone(), 
+									v3.clone(), 
+									v4.clone()
+									),
+								p3 = new Poly2(
+									v3.clone(), 
+									v4.clone(), 
+									v5.clone()
+									);
+							
+							expect(p1.sharesEdge(p2)).toEqual({local: [1, 2], remote: [0, 1]});
+							expect(p2.sharesEdge(p1)).toEqual({local: [0, 1], remote: [1, 2]});
+							expect(p2.sharesEdge(p3)).toEqual({local: [1, 2], remote: [0, 1]});
+							expect(p3.sharesEdge(p2)).toEqual({local: [0, 1], remote: [1, 2]});
+						});// it should detect, and correctly label a shared edge using a simple dataset
+						
+						it('it should detect, and correctly label a shared edge using a complex dataset', function () {
+							var v1, v2, v3, v4, v5, v6, v7, v8, v9, p1, p2, p3, p4, p5;
+							
+							v1 = new Vector2(2, 5);
+							v2 = new Vector2(4, 4);
+							v3 = new Vector2(3, 1);
+							v4 = new Vector2(1, 1);
+							v5 = new Vector2(0, 4);
+							v6 = new Vector2(0, 5);
+							v7 = new Vector2(4, 5);
+							v8 = new Vector2(4, 1);
+							v9 = new Vector2(0, 1);
+							
+							p1 = new Poly2(v1.clone(), v2.clone(), v3.clone(), v4.clone(), v5.clone());
+							p2 = new Poly2(v6.clone(), v1.clone(), v5.clone());
+							p3 = new Poly2(v7.clone(), v1.clone(), v2.clone());
+							p4 = new Poly2(v8.clone(), v2.clone(), v3.clone());
+							p5 = new Poly2(v9.clone(), v4.clone(), v5.clone());
+							
+							expect(p1.sharesEdge(p2)).toEqual({local: [0, 4], remote: [1, 2]});
+							expect(p1.sharesEdge(p3)).toEqual({local: [0, 1], remote: [1, 2]});
+							expect(p1.sharesEdge(p4)).toEqual({local: [1, 2], remote: [1, 2]});
+							expect(p1.sharesEdge(p5)).toEqual({local: [3, 4], remote: [1, 2]});
+							
+							expect(p2.sharesEdge(p1)).toEqual({local: [1, 2], remote: [0, 4]});
+							expect(p3.sharesEdge(p1)).toEqual({local: [1, 2], remote: [0, 1]});
+							expect(p4.sharesEdge(p1)).toEqual({local: [1, 2], remote: [1, 2]});
+							expect(p5.sharesEdge(p1)).toEqual({local: [1, 2], remote: [3, 4]});
+						});// it should detect, and correctly label a shared edge using a complex dataset
 					});//sharesEdge
 					
 					describe('isVector2Internal', function () {

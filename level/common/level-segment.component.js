@@ -31,25 +31,33 @@ define(
 					 * @return true
 					 */
 					attach: function (path, options) {
+						var level;
+						
 						// The level component is required.
 						if (! entity.hasComponent('level')) {
 							return false;
 						}
 						
+						// Localise the level component.
+						level = entity.getComponent('level')[0].getLevel();
+						
 						// Launch the async operation
 						return function () {
+							// Localise the callback to complete the belated 
+							// flow-js request
 							var callback = this;
 							
 							// Execute the async file load.
-							require(['text!' + path], function (data) {
+							require(['text!' + path, level.getSegmentFormat()], function (data, Format) {
 								data = JSON.parse(data);
 								
-								entity.getComponent('level')[0].getLevel()
+								// Create a new LevelSegment, and execute the
+								// belated flow-js request.
+								level
 									.addSegment(
-										new LevelSegment(data, options)
-										);
-								
-								callback();
+										new LevelSegment(Format, data, options),
+										callback
+									);
 							});
 						};
 					}

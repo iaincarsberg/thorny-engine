@@ -94,7 +94,7 @@ define(
 				);
 			});
 			
-			instance.delete(function (entity) {
+			instance.remove(function (entity) {
 				// Remove each of the tagged references to the entity
 				underscore.each(entityTag[entity.getId()], function (value, key) {
 					delete tagEntity[key];
@@ -102,7 +102,7 @@ define(
 				
 				// Then remove each of the entites refernces to a tag
 				delete entityTag[entity.getId()];
-			});// instance.delete
+			});// instance.remove
 			
 			/**
 			 * Used to fetch tagged entities.

@@ -1,4 +1,18 @@
 /*global define*/
+/*
+Note:
+The following crude ascii diagram labels the corners of a Tile2, this is of 
+importance when dealing with networking Tile2s within a LevelSegment.
+
+  2       1
+	-----
+	|   |
+	|   |
+	|   |
+	-----
+  3       0
+
+*/
 define(
 	[
 		'thorny',
@@ -26,6 +40,17 @@ define(
 				}
 				if (height === undefined) {
 					height = defaults.height;
+				}
+				
+				// The way the LevelSegment class works is to build a list of
+				// Vector2s, and call Format.apply(null, Vector2s), so we need
+				// to be in a situation where we can accept a Vector2 as our
+				// constructor.
+				if (x instanceof Vector2 && 
+					y === undefined
+				) {
+					y = x.getY() * height;
+					x = x.getX() * width;
 				}
 				
 				// Half the width and height
@@ -98,6 +123,8 @@ define(
 				 * @return boolean true is edge is shared
 				 */
 				sharesEdge: function (tile2) {
+					var negativeAdjacency = false;
+					
 					if (tile2 instanceof Tile2) {
 						if (this.sameAs(tile2)) {
 							return false;
@@ -106,19 +133,37 @@ define(
 						if (this.getX() === tile2.getX() &&
 							(
 								this.getY() === tile2.getY() - this.data('height') - tile2.data('height') ||
-								this.getY() === tile2.getY() + this.data('height') + tile2.data('height')
+								(negativeAdjacency = this.getY() === tile2.getY() + this.data('height') + tile2.data('height'))
 							)
 						) {
-							return true;
+							if (negativeAdjacency) {
+								return {
+									local: [0, 3],
+									remote: [1, 2]
+								};
+							}
+							return {
+								local: [1, 2],
+								remote: [0, 3]
+							};
 							
 						} else if (
 							this.getY() === tile2.getY() &&
 							(
 								this.getX() === tile2.getX() - this.data('width') - tile2.data('width') ||
-								this.getX() === tile2.getX() + this.data('width') + tile2.data('width')
+								(negativeAdjacency = this.getX() === tile2.getX() + this.data('width') + tile2.data('width'))
 							)
 						) {
-							return true;
+							if (negativeAdjacency) {
+								return {
+									local: [2, 3],
+									remote: [0, 1]
+								};
+							}
+							return {
+								local: [0, 1],
+								remote: [2, 3]
+							};
 						}
 					}
 					
@@ -158,9 +203,32 @@ define(
 		 * @return this, to allow object chaining
 		 */
 		Tile2.setDefaults = function (options) {
-			defaults = underscore.merge(defaults, options);
+			defaults = underscore.extend(defaults, options);
 			return Tile2;
 		};
+		
+		/**
+		 * Used to find the length of a Tile2
+		 * @param Tile2 tile2
+		 * @return int Containing the length of the Tile2
+		 */
+		Tile2.getLength = function (tile2) {
+			if (tile2 !== undefined &&
+				! (tile2 instanceof Tile2)
+			) {
+				throw new Error(
+					'Poly2.getLength: Only accepts object of type Poly2'
+					);
+			}
+			return 4;
+		};
+		
+		/**
+		 * This is a bit of a hack to allow "level/common/level-segment.js" 
+		 * to load in less verbose Tile2's from disk.
+		 * @var boolean
+		 */
+		Tile2.acceptSimpleShapes = true;
 		
 		// Make the Tile2d available to the big wide world!
 		return Tile2;

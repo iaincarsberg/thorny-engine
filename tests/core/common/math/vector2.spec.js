@@ -47,6 +47,7 @@ define(
 					expect(typeof v2.rotateToFace).toEqual('function');
 					expect(typeof v2.toRadians).toEqual('function');
 					expect(typeof v2.clone).toEqual('function');
+					expect(typeof v2.copy).toEqual('function');
 					
 					ran = true;
 					waitsFor(function () {
@@ -109,13 +110,15 @@ define(
 								v2 = new Vector2(1234567890, -1234567890),
 								v3 = new Vector2(0.00000001, 10.99999999),
 								v4 = new Vector2(123.45, 678.90),
-								v5 = new Vector2(-1, -1);
-
+								v5 = new Vector2(-1, -1),
+								v6 = new Vector2(100, 0);
+							
 							expect(v1.getSimpleCoords()).toEqual([0, 0]);
 							expect(v2.getSimpleCoords()).toEqual([1234567890, -1234567890]);
 							expect(v3.getSimpleCoords()).toEqual([0.00000001, 10.99999999]);
 							expect(v4.getSimpleCoords()).toEqual([123.45, 678.90]);
 							expect(v5.getSimpleCoords()).toEqual([-1, -1]);
+							expect(v6.getSimpleCoords()).toEqual([100, 0]);
 							
 							ran = true;
 							waitsFor(function () {
@@ -719,6 +722,21 @@ define(
 							}, 'thorny!math/vector2: clone failed');
 						});// it should duplicate a vector2 into a new vector2
 					});// desc clone
+					
+					describe('the copy function', function () {
+						it('it should copy the coordinates from an existing Vector2', function () {
+							var v1, v2;
+							
+							v1 = new Vector2(0, 0);
+							v2 = new Vector2(10, 20);
+							
+							v1.copy(v2);
+							
+							expect(v1.getX()).toEqual(10);
+							expect(v1.getY()).toEqual(20);
+							
+						});// it should copy the coordinates from an existing Vector2
+					});// desc the copy function
 				});// desc should have a function called
 			});// desc once instantiated
 			

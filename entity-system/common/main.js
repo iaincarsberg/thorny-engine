@@ -75,7 +75,7 @@ define(
 				 * @return void
 				 * @triggers entityRemoved
 				 */
-				delete: function () {
+				remove: function () {
 					this.notifyObservers('entityRemoved', entities[this.data('id')]);
 					
 					delete entities[this.data('id')];
@@ -129,7 +129,7 @@ define(
 				 * @param function callback, called upon deletion
 				 * @return void
 				 */
-				delete: function (callback) {
+				remove: function (callback) {
 					completers.push(function (entity) {
 						// Create a new observer, and bind the callback into 
 						// it, then observe the entity.

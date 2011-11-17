@@ -51,6 +51,19 @@ define(
 				},
 				
 				/**
+				 * Used to copy the values from another Vector2.
+				 * @param Vector2 host Contains a Vector2 that we're copying
+				 * @return this, to allow object chaining
+				 */
+				copy: function (host) {
+					this
+						.setX(host.getX())
+						.setY(host.getY());
+					
+					return this;
+				},
+				
+				/**
 				 * Used to clone an existing Vector2
 				 * @param void
 				 * @return Vector2 Containing a duplicate of this Vector2

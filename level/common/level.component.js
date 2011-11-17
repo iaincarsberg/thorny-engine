@@ -43,11 +43,11 @@ define(
 					},
 					
 					/**
-					 * Used to delete a level component
+					 * Used to remove a level component
 					 * @param void
 					 * @return void
 					 */
-					delete: function () {
+					remove: function () {
 						delete levels[entity.getId()];
 					}
 				};

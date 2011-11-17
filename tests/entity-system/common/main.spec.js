@@ -45,7 +45,7 @@ define(
 					var e = new Entity();
 					
 					expect(typeof e.getId).toEqual('function');
-					expect(typeof e.delete).toEqual('function');
+					expect(typeof e.remove).toEqual('function');
 				});// it should have the following functions
 				
 				describe('getId', function () {
@@ -61,7 +61,7 @@ define(
 					});// it should return an incromenting id
 				});// desc getId
 				
-				describe('delete', function () {
+				describe('remove', function () {
 					describe('it should call the listening entityRemoved listener', function () {
 						var 
 							runs = 0,
@@ -91,13 +91,13 @@ define(
 							.observe(e2)
 							.observe(e3);
 						
-						e1.delete();
-						e2.delete();
-						e3.delete();
+						e1.remove();
+						e2.remove();
+						e3.remove();
 
 						expect(runs).toMatch(3);
 					});// it should call the listening entityRemoved listener
-				});// desc delete
+				});// desc remove
 			});// desc once instantiated
 		});// desc The Entity-System Base Object
 	}

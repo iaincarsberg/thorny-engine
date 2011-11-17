@@ -216,15 +216,15 @@ define(
 				);
 			});
 			
-			instance.delete(function (entity) {
+			instance.remove(function (entity) {
 				underscore.each(entityComponent[entity.getId()], function (component) {
-					if (underscore.isFunction(component.delete)) {
-						component.delete();
+					if (underscore.isFunction(component.remove)) {
+						component.remove();
 					}
 				});
 				
 				delete entityComponent[entity.getId()];
-			});// instance.delete
+			});// instance.remove
 			
 			/**
 			 * Used to register a component with the component entity-system

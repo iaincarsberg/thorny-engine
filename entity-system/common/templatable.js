@@ -233,10 +233,10 @@ define(
 				}
 			});// instance.instantiated
 			
-			instance.delete(function (entity) {
+			instance.remove(function (entity) {
 				delete templates[entity.getId()];
 				delete components[entity.getId()];
-			});// instance.delete
+			});// instance.remove
 			
 			/*
 			We may need to check contants inside the module, and with no 

@@ -33,6 +33,7 @@ define(
 				
 				// Build the vector2 data store.
 				this.data('vector2s', []);
+				this.data('publicVector2s', []);
 				for (i = 0, args; i < args; i += 1) {
 					if (! (arguments[i] instanceof Vector2)) {
 						throw new Error('Poly2 only accepts parameters of type Vector2');
@@ -43,8 +44,14 @@ define(
 						// shape, so if the Poly2 needs to move we just 
 						// translate one point, then add it to the others when 
 						// you do a getVector2s.
-						arguments[i].sub(centroid)
+						arguments[i].clone().sub(centroid)
 						);
+						
+					// We want to create a public vector per vector within 
+					// this shape. This allows us to expose a fixed number of 
+					// Vector2s without having to abuse the garbage collector.
+					this.data('publicVector2s').push(new Vector2());
+					
 				}
 			},
 			{
@@ -56,13 +63,14 @@ define(
 				getVector2s: function () {
 					var 
 						vectors = this.data('vector2s'),
+						publicVector2s = this.data('publicVector2s'),
 						response = [],
 						i, ii;
 					
 					for (i = 0, ii = vectors.length; i < ii; i += 1) {
 						response.push(
-							vectors[i]
-								.clone()
+							publicVector2s[i]
+								.copy(vectors[i])
 								.add(this)
 							);
 					}
@@ -95,7 +103,11 @@ define(
 					}
 					
 					var
-						common = [],
+						edge = {
+							local: [],
+							remote: []
+						},
+						common = 0,
 						local = this.getVector2s(),
 						remote = poly2.getVector2s(),
 						i,	// Used for loop control
@@ -106,13 +118,19 @@ define(
 					for (i = 0, ii = local.length; i < ii; i += 1) {
 						for (j = 0, jj = remote.length; j < jj; j += 1) {
 							if (local[i].sameAs(remote[j])) {
-								common.push(local[i]);
+								// Build up the edges data
+								edge.local.push(i);
+								edge.remote.push(j);
+								
+								// Incroment the common counter
+								common += 1;
 							}
 						}
 					}
 					
-					if (common.length === 2) {
-						return common;
+					// Check to makesure a complete edge was detected.
+					if (common === 2) {
+						return edge;
 					}
 					
 					return false;
@@ -260,6 +278,21 @@ define(
 				insideProjection: insideProjection
 			};
 		};//findDistanceFromLineSegment
+		
+		/**
+		 * Used to find the length of a Poly2
+		 * @param Poly2 poly2 Contains a poly2 we want to know the length of
+		 * @return int Containing the length of the Poly2
+		 */
+		Poly2.getLength = function (poly2) {
+			if (! (poly2 instanceof Poly2)) {
+				throw new Error(
+					'Poly2.getLength: Only accepts object of type Poly2'
+					);
+			}
+			
+			return poly2.data('vector2s').length;
+		};
 		
 		// Make the Poly2 available to the big wide world!
 		return Poly2;
