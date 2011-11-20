@@ -1,89 +1,145 @@
 /*global window console*/
 (function (require, undefined) {
-	return;
-	require(
-		[
-			'thorny',
-			'thorny!math/vector2',
-			'thorny!observer/observable',
-			// 'thorny!core>*>math/vector2',
-			// 'thorny!*>math/vector2',
-			
-			// 'thorny!common>math/vector2',
-			// 'thorny!browser>math/vector2',
-			// 'thorny!node.js>math/vector2',
-			// 'thorny!blah>common>math/vector2'
-		], 
-		function (
-			Thorny,
-			Vector2,
-			observable,
-			list
-		) {
-			console.log(
-				list
+	require([], function () {
+		/*
+		Toying with how to implement the astar system...
+		
+		// Create a hero for the player to control
+		new Entity()
+			.addComponent('player-controlled')
+			.addComponent('position')
+			.addComponent(
+				'sprite', 
+				new Entity()
+					.addComponent('sprite-sheet', {
+						// sprite sheet data
+					})
 				);
-			var v2s, t = new Thorny();
-			
-			console.log(
-				t,
-				'**',
-				typeof Vector2,
-				'**'
-				);
-				
-			console.log(
-				Vector2.lineIntersection(
-					new Vector2(0, 0),
-					new Vector2(50, 50),
-					new Vector2(0, 50),
-					new Vector2(50, 0)
-					)
-				);
-			
-			v2s = [
-				new Vector2(12, 34),
-				new Vector2(56, 78),
-				new Vector2(90, 12)
-			];
-			
-			console.log(
-				v2s[0].getX(), v2s[0].getY(),
-				v2s[1].getX(), v2s[1].getY(),
-				v2s[2].getX(), v2s[2].getY()
-				);
-			
-			
-			console.log('********************************');
-			observable(v2s[0]);
-			
-			console.log(
-				typeof v2s[0].getX,
-				typeof v2s[0].getY,
-				v2s[0].data('cake', 'nom'),
-				v2s[0].getX(), v2s[0].getY(), v2s[0].clone().normalize().getSimpleCoords()
-				);
-		}
-	);
-}(typeof window === 'undefined' ? require('./lib/r') : require));
-(function (require, undefined) {
-	require(
-		[
-			'thorny!math/poly2',
-			'thorny!math/vector2'
-		], 
-		function (
-			Poly2,
-			Vector2
-		) {
-			var p2 = new Poly2(
-				new Vector2(0, 0),
-				new Vector2(10, 0),
-				new Vector2(10, 10),
-				new Vector2(0, 10)
-			);
-			
-			console.log('Poly2:', p2);
-		}
-	);
+		
+		// Load the level
+		new Entity()
+			.addComponent('level')
+			.addComponent('levelSegment', 'path/to/a/level/segment.json')
+			.addComponent('levelSegment', 'path/to/another/level/segment.json')
+			.addComponent('pathfinder/astar')
+			.addComponent('pathfinder/funnel')
+			.triggers('level-loaded');
+		
+		// Wait for the level to be loaded
+		event.bind('level-loaded', function (entity) {
+			// Bind the mouse click event to control the actor
+			event.bind('mouse-click', function (click) {
+				// Search for the player(s)
+				Entity
+					.searchByComponents('player-controlled', 'position')
+					.each(function (controller, position) {
+						// And update their movement route
+						controller.updateRoute(
+							entity
+								.getComponent('pathfinder/funnel')[0]
+								.route(
+									position,
+									click
+								)
+						);
+					});
+			});
+		});
+		*/
+		
+		/*
+		Model system...
+		
+		// Setup
+		var ModelSprite = Model.extends([
+			{
+				component: 'sprite'
+			},
+			{
+				component: 'rendererable'
+			}
+		]);
+		
+		var ModelHeroSprite = ModelSprite.extends({
+			sprite: {
+				atlas: 'hero.png',
+				cellWidth: 32,
+				cellHeight: 32,
+				animations: {
+					walk:  [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]],
+					run:   [[1, 0], [1, 1], [1, 2], [1, 3], [1, 4]],
+					fight: [[2, 0], [2, 1], [2, 2], [2, 3], [2, 4]],
+					die:   [[3, 0], [3, 1], [3, 2], [3, 3], [3, 4]]
+				}
+			},
+			rendererable: {
+				opacity: 1.0
+			}
+		});
+		
+		var ModelActor = Model.extends([
+			{
+				component: 'player-controlled',
+			},
+			{
+				component: 'position',
+				data: [
+					0, 0
+				]
+			},
+			{
+				component: 'sprite',
+				data: [
+					ModelHeroSprite.createEntity()
+				]
+			}
+		]);
+		
+		var ModelWorld = Model.extends([
+			{
+				component: 'level'
+			},
+			{
+				component: 'levelSegment'
+			}
+		]);
+		
+		
+		// Usage
+		Actor.createEntity();
+		World.createEntity({
+			levelSegment: [
+				[
+					'path/to/a/level/segment.json'
+				],
+				[
+					'path/to/another/level/segment.json',
+					{
+						name: 'another world'
+					}
+				]
+			]
+		}).triggers('level-load');
+		
+		event.bind('level-loaded', function (entity) {
+			// Bind the mouse click event to control the actor
+			event.bind('mouse-click', function (click) {
+				// Search for the player(s)
+				Entity
+					.searchByComponents('player-controlled', 'position')
+					.each(function (controller, position) {
+						// And update their movement route
+						controller.updateRoute(
+							entity
+								.getComponent('pathfinder/funnel')[0]
+								.route(
+									position,
+									click
+								)
+						);
+					});
+			});
+		});
+		*/
+	});
 }(typeof window === 'undefined' ? require('./lib/r') : require));
