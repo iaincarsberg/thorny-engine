@@ -2,6 +2,8 @@
 define(
 	[
 		'thorny',
+		'thorny!entity-system>main',
+		'thorny!event',
 		'thorny!level>main',
 		'thorny!level>level-segment',
 		'thorny!math/poly2',
@@ -9,6 +11,8 @@ define(
 	],
 	function (
 		Thorny,
+		Entity,
+		event,
 		Level,
 		LevelSegment,
 		Poly2,
@@ -33,6 +37,7 @@ define(
 					// Functions
 					expect(typeof level.addSegment).toEqual('function');
 					expect(typeof level.getSegment).toEqual('function');
+					expect(typeof level.removeSegment).toEqual('function');
 					expect(typeof level.getSegmentFormat).toEqual('function');
 				});// it should have the following functions
 				
@@ -137,6 +142,62 @@ define(
 							expect(level.getSegment('some unknown segment')).toBeFalsy();
 						});// it should return false if attempting to access an unknow level segment
 					});// desc the getSegment function
+					
+					describe('the removeSegment function', function () {
+						it('it should remove the LevelSegment from the level', function () {
+							var ran = false;
+							
+							new Entity()
+								.addComponent(
+									'level'
+									)
+								.addComponent(
+									'level-segment', 
+									'tests/fixtures/levels/poly2/003.json'
+									)
+								.addComponent(
+									'level-segment', 
+									'tests/fixtures/levels/poly2/004.json'
+									)
+								.triggers('level:removeSegment:1');
+
+							event.bind('level:removeSegment:1', function (entity, data) {
+								expect(entity instanceof Entity).toBeTruthy();
+								expect(entity.listComponents()).toContain('flow-js-handle');
+								
+								var level, segment;
+								
+								level = entity
+									.getComponent('level')[0]
+									.getLevel();
+								
+								// Remove the 002 level segment
+								level.removeSegment('004');
+								
+								// Makesure its been removed
+								expect(level.getSegment('004')).toBeFalsy();
+								
+								segment = level.getSegment('003');
+								
+								// Makesure the edge is replaced
+								expect(segment.isEdge(0, 0)).toBeTruthy();
+								expect(segment.isEdge(0, 1)).toBeTruthy();
+								expect(segment.isEdge(0, 2)).toBeTruthy();
+								expect(segment.isEdge(0, 3)).toBeTruthy();
+								
+								// Makesure the level has un-networked the
+								// recently deleted LevelSegment.
+								expect(level.data('network')['004']).toEqual(undefined);
+								expect(level.data('network')['003']['004']).toEqual(undefined);
+								
+								ran = true;
+							});
+
+							waitsFor(function () {
+								return ran;
+							});
+						});// it should remove the LevelSegment from the level
+					});// desc the removeSegment function
 					
 					describe('the getSegmentFormat function', function () {
 						it('it should return the default path that points to a Poly2', function () {

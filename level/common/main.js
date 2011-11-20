@@ -99,6 +99,52 @@ define(
 				},
 				
 				/**
+				 * Used to remove a specific LevelSegment
+				 * @param void
+				 * @return this, to allow object chaining
+				 */
+				removeSegment: function (name) {
+					var level, segment;
+					
+					level = this;
+					segment = level.getSegment(name);
+					
+					// Makesure the segment is valid
+					if (! (segment instanceof LevelSegment)) {
+						return;
+					}
+					
+					// Close the edges of the level, this is to prevent any 
+					// entity falling through the gaps of an open edge that
+					// goes into unknow space.
+					underscore.each(segment.getNetworkedNeighbours(), function (connection) {
+						var targetSegment = level.getSegment(connection.target);
+						
+						// Flag the edges as clear on the newly attached 
+						// LevelSegments.
+						targetSegment.flagEdge(
+							connection.targetShapeId, 
+							LevelSegment.edgePicker(
+								connection.targetVector2Id1,
+								connection.targetVector2Id2
+								),
+							true
+							);
+					});
+					
+					// Clearout the network data
+					//   First remove all remote links
+					underscore.each(level.data('network')[name], function (value, key) {
+						delete level.data('network')[key][name];
+					});
+					//   Then remove the local link.
+					delete level.data('network')[name];
+					
+					// Clear the segment out from the level
+					delete level.data('segments')[name];
+				},
+				
+				/**
 				 * Used to fetch a LevelSegment from the level.
 				 * @param string name Contains the name of a LevelSegment
 				 * @return LevelSegment|false Contains the required 
