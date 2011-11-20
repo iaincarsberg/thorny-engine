@@ -3,12 +3,14 @@ define(
 	[
 		'thorny',
 		'thorny!observer/observer',
-		'thorny!observer/observable'
+		'thorny!observer/observable',
+		'cjs!underscore'
 	], 
 	function (
 		Thorny,
 		observer,
-		observable
+		observable,
+		underscore
 	) {
 		if (Thorny.event) {
 			return Thorny.event;
@@ -39,11 +41,17 @@ define(
 					this.addObserver(
 						observer(data)
 						);
-
+					
 					// Check to see if there is a belated event we need to trigger.
-					if (this.data('belated')[eventType]) {
+					if (underscore.isArray(this.data('belated')[eventType])) {
+						// Use the belated details to execute the trigger
+						this.trigger.apply(
+							this, 
+							this.data('belated')[eventType]
+							);
+							
+						// Clear the belated event
 						this.data('belated')[eventType] = undefined;
-						this.trigger(eventType);
 					}
 				},
 
@@ -62,7 +70,11 @@ define(
 
 					// If no events we're triggered then we have a belated event.
 					if (belatable === true && executed === 0) {
-						this.data('belated')[eventType] = true;
+						this.data('belated')[eventType] = [
+							eventType, 
+							false, 
+							data
+						];
 					}
 				}
 			}

@@ -92,14 +92,27 @@ define(
 					var helloWorld = false;
 					
 					new Entity()
-						.triggers('event:belated');
+						.triggers('event:belated:1');
 					
-					event.bind('event:belated', function () {
+					event.bind('event:belated:1', function () {
 						helloWorld = true;
 					});
 					
 					expect(helloWorld).toBeTruthy();
 				});//it should have the following functions
+				
+				it('it should parse any data provided into the bound callback', function () {
+					var ran = false;
+					new Entity()
+						.triggers('event:belated:2');
+					
+					event.bind('event:belated:2', function (entity) {
+						expect(entity instanceof Entity).toBeTruthy();
+						ran = true;
+					});
+					
+					expect(ran).toBeTruthy();
+				});// it should parse any data provided into the bound callback
 			});// desc belated events
 		});// desc The Event Object
 	}
