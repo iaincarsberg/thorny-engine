@@ -21,10 +21,6 @@ define(
 		 * @return void.
 		 */
 		return function (level, localSegment, callback) {
-			console.log(
-				'Add code to handle de-networking of LevelSegments'
-				);
-			
 			require(['thorny!level>main'], function (Level) {
 				var network, targetSegment;
 				

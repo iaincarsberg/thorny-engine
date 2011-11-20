@@ -1,4 +1,4 @@
-/*global define console window describe it expect runs waitsFor*/
+/*global define window describe it expect runs waitsFor*/
 define(
 	[
 		'thorny!level>main',
