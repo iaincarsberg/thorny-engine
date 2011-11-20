@@ -38,6 +38,26 @@ define(
 					expect(e.listComponents()).toContain('async-component');
 				});// it should automatically bind, if another component requires it
 				
+				it('it should execute the async test', function () {
+					var ran = false;
+					
+					new Entity()
+						.addComponent('async-component')
+						.triggers('require:flow-js:1');
+					
+					event.bind('require:flow-js:1', function (entity, asyncOppsRan) {
+						expect(entity instanceof Entity).toBeTruthy();
+						expect(entity.listComponents()).toContain('flow-js-handle');
+						expect(entity.listComponents()).toContain('async-component');
+						
+						ran = true;
+					});
+					
+					waitsFor(function () {
+						return ran;
+					});
+				});// it should execute the async test
+				
 				it('it should execute the async test component, and process the response', function () {
 					var runs = 0;
 					
@@ -46,9 +66,9 @@ define(
 						.addComponent('async-component')
 						.addComponent('async-component')
 						.addComponent('async-component')
-						.triggers('require:flow-js:1');
+						.triggers('require:flow-js:2');
 					
-					event.bind('require:flow-js:1', function (entity, asyncOppsRan) {
+					event.bind('require:flow-js:2', function (entity, asyncOppsRan) {
 						runs = asyncOppsRan;
 						
 						expect(entity instanceof Entity).toBeTruthy();
