@@ -3,7 +3,8 @@ define(
 	[
 		'thorny',
 		'thorny!entity-system>main',
-		'thorny!event'
+		'thorny!event',
+		'thorny!tests/fixtures>entity-system>component_a.component'
 	],
 	function (
 		Thorny,
@@ -34,6 +35,31 @@ define(
 				});
 				expect(called).toEqual(3);
 			});// it should trigger an event within the event chain call
+			
+			it('it should trigger an event when a component is added', function () {
+				var called = 0;
+				
+				new Entity()
+					.addComponent('componentA')
+					.triggers('entity:trigger:simple:1')
+					.triggers('entity:trigger:simple:2')
+					.triggers('entity:trigger:simple:3');
+				
+				event.bind('entity:trigger:simple:1', function () {
+					called += 1;
+				});
+				expect(called).toEqual(1);
+				
+				event.bind('entity:trigger:simple:2', function () {
+					called += 1;
+				});
+				expect(called).toEqual(2);
+				
+				event.bind('entity:trigger:simple:3', function () {
+					called += 1;
+				});
+				expect(called).toEqual(3);
+			});
 		});// desc The Entity-System Base Object
 	}
 );
