@@ -1,0 +1,25 @@
+{
+	"name": "004",
+	"format": "poly2",
+	"data": [
+		[
+			{"x": 0, "y": 0},
+			{"x": 100, "y": 0},
+			{"x": 100, "y": 100},
+			{"x": 0, "y": 100}
+		]
+	],
+	"x": 100,
+	"y": 0,
+	"network": [
+		{
+			"target": "003",
+			"targetShapeId": 0,
+			"targetVector2Id1": 1,
+			"targetVector2Id2": 2,
+			"localShapeId": 0,
+			"localVector2Id1": 0,
+			"localVector2Id2": 3
+		}
+	]
+}

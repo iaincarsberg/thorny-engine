@@ -32,10 +32,10 @@
 	"network": [
 		{
 			"target": "001",
-			"targetPoly2Id": 3,
+			"targetShapeId": 3,
 			"targetVector2Id1": 1,
 			"targetVector2Id2": 2,
-			"localPoly2Id": 0,
+			"localShapeId": 0,
 			"localVector2Id1": 0,
 			"localVector2Id2": 3
 		}
