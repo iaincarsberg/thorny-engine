@@ -168,7 +168,7 @@ define(
 								var level, segment;
 								
 								level = entity
-									.getComponent('level')[0]
+									.getComponent('level')
 									.getLevel();
 								
 								// Remove the 002 level segment

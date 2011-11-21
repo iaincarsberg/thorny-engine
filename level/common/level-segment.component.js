@@ -39,7 +39,7 @@ define(
 						}
 						
 						// Localise the level component.
-						level = entity.getComponent('level')[0].getLevel();
+						level = entity.getComponent('level').getLevel();
 						
 						// Launch the async operation
 						return function () {

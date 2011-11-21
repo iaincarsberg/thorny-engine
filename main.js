@@ -21,7 +21,7 @@
 				.triggers('level-loaded');
 				
 			// Localise the Level, this bit needs some work, as its ugly :\
-			level = level.getComponent('level')[0].getLevel();
+			level = level.getComponent('level').getLevel();
 			
 			event.bind('level-loaded', function () {
 				console.log(level.getSegment('001').getName());

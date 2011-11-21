@@ -20,8 +20,8 @@ define(
 					e.addComponent('flow-js-handle');
 					
 					expect(e.listComponents()).toContain('flow-js-handle');
-					expect(typeof e.getComponent('flow-js-handle')[0].flowAppend).toEqual('function');
-					expect(typeof e.getComponent('flow-js-handle')[0].flowExec).toEqual('function');
+					expect(typeof e.getComponent('flow-js-handle').flowAppend).toEqual('function');
+					expect(typeof e.getComponent('flow-js-handle').flowExec).toEqual('function');
 				});// it should have the following component
 			});// desc once instantiated
 			

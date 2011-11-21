@@ -74,7 +74,7 @@ define(
 							// then we need to handle the event triggering a 
 							// bit differently.
 							if (entity.hasComponent('flow-js-handle')) {
-								entity.getComponent('flow-js-handle')[0]
+								entity.getComponent('flow-js-handle')
 									.flowExec(function () {
 										trigger(args, underscore.toArray(arguments));	
 									});

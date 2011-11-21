@@ -56,9 +56,9 @@ define(
 							entity.addComponent('registerComponent:contains:a');
 							
 							expect(entity.hasComponent('registerComponent:contains:a')).toBeTruthy();
-							expect(typeof entity.getComponent('registerComponent:contains:a')[0]).toEqual('object');
-							expect(typeof entity.getComponent('registerComponent:contains:a')[0].hello).toEqual('string');
-							expect(entity.getComponent('registerComponent:contains:a')[0].hello).toEqual('world');
+							expect(typeof entity.getComponent('registerComponent:contains:a')).toEqual('object');
+							expect(typeof entity.getComponent('registerComponent:contains:a').hello).toEqual('string');
+							expect(entity.getComponent('registerComponent:contains:a').hello).toEqual('world');
 						});// should contain the following functions
 
 						it("shouldn't allow a component to be registered with the same name", function () {
@@ -450,11 +450,11 @@ define(
 							entity.addComponent('generic');
 							
 							expect(entity.hasComponent('generic')).toBeTruthy();
-							expect(typeof entity.getComponent('generic')[0]).toEqual('object');
-							expect(typeof entity.getComponent('generic')[0].dance).toEqual('function');
-							expect(entity.getComponent('generic')[0].attach).toBeUndefined();
-							expect(entity.getComponent('generic')[0].dance()).toEqual('put your left leg in, take your left leg out, in, out, in, out, shake it all about');
-							expect(entity.getComponent('generic')[0].name).toEqual('generic component');
+							expect(typeof entity.getComponent('generic')).toEqual('object');
+							expect(typeof entity.getComponent('generic').dance).toEqual('function');
+							expect(entity.getComponent('generic').attach).toBeUndefined();
+							expect(entity.getComponent('generic').dance()).toEqual('put your left leg in, take your left leg out, in, out, in, out, shake it all about');
+							expect(entity.getComponent('generic').name).toEqual('generic component');
 						});//it should add an entry in the local entities object the first time an entity has a component added
 
 						it('should add a new known component', function () {
@@ -465,27 +465,27 @@ define(
 							expect(entity.hasComponent('uniqueComponentA')).toBeTruthy();
 							expect(entity.hasComponent('uniqueComponentB')).toBeFalsy();
 							expect(entity.hasComponent('uniqueComponentC')).toBeFalsy();
-							expect(entity.getComponent('uniqueComponentA')[0].name).toEqual('component a');
-							expect(entity.getComponent('uniqueComponentB')[0]).toBeFalsy();
-							expect(entity.getComponent('uniqueComponentC')[0]).toBeFalsy();
+							expect(entity.getComponent('uniqueComponentA').name).toEqual('component a');
+							expect(entity.getComponent('uniqueComponentB')).toBeFalsy();
+							expect(entity.getComponent('uniqueComponentC')).toBeFalsy();
 							
 							// Add component b to the entity
 							entity.addComponent('uniqueComponentB');
 							expect(entity.hasComponent('uniqueComponentA')).toBeTruthy();
 							expect(entity.hasComponent('uniqueComponentB')).toBeTruthy();
 							expect(entity.hasComponent('uniqueComponentC')).toBeFalsy();
-							expect(entity.getComponent('uniqueComponentA')[0].name).toEqual('component a');
-							expect(entity.getComponent('uniqueComponentB')[0].name).toEqual('component b');
-							expect(entity.getComponent('uniqueComponentC')[0]).toBeFalsy();
+							expect(entity.getComponent('uniqueComponentA').name).toEqual('component a');
+							expect(entity.getComponent('uniqueComponentB').name).toEqual('component b');
+							expect(entity.getComponent('uniqueComponentC')).toBeFalsy();
 
 							// Add component c to the entity
 							entity.addComponent('uniqueComponentC');
 							expect(entity.hasComponent('uniqueComponentA')).toBeTruthy();
 							expect(entity.hasComponent('uniqueComponentB')).toBeTruthy();
 							expect(entity.hasComponent('uniqueComponentC')).toBeTruthy();
-							expect(entity.getComponent('uniqueComponentA')[0].name).toEqual('component a');
-							expect(entity.getComponent('uniqueComponentB')[0].name).toEqual('component b');
-							expect(entity.getComponent('uniqueComponentC')[0].name).toEqual('component c');
+							expect(entity.getComponent('uniqueComponentA').name).toEqual('component a');
+							expect(entity.getComponent('uniqueComponentB').name).toEqual('component b');
+							expect(entity.getComponent('uniqueComponentC').name).toEqual('component c');
 						});//it should add a new known component
 
 						it("shouldn't allow an 'isUnique' component to be added multiple times", function () {
@@ -494,7 +494,7 @@ define(
 							// Add component a to the entity
 							entity.addComponent('uniqueComponentA');
 							expect(entity.hasComponent('uniqueComponentA')).toBeTruthy();
-							expect(entity.getComponent('uniqueComponentA')[0].name).toEqual('component a');
+							expect(entity.getComponent('uniqueComponentA').name).toEqual('component a');
 
 							// Try to add a second unique a...
 							try {
@@ -530,8 +530,7 @@ define(
 							entity.addComponent('uniqueComponentA');
 							expect(entity.hasComponent('uniqueComponentA')).toBeTruthy();
 							expect(typeof entity.getComponent('uniqueComponentA')).toEqual('object');
-							expect(entity.getComponent('uniqueComponentA').length).toEqual(1);
-							expect(entity.getComponent('uniqueComponentA')[0].name).toEqual('component a');
+							expect(entity.getComponent('uniqueComponentA').name).toEqual('component a');
 						});// it should wrap an 'inUnique' component in an array at the 0th index
 						
 						it("should append '!inUnique' components at the correct incromenting index", function () {
@@ -571,7 +570,7 @@ define(
 								.addComponent('uniqueComponentA');
 							
 							expect(entity.getComponent('componentA') instanceof Array).toBeTruthy();
-							expect(entity.getComponent('uniqueComponentA') instanceof Array).toBeTruthy();
+							expect(entity.getComponent('uniqueComponentA') instanceof Object).toBeTruthy();
 						});// it should return an instance of Array
 						
 						it("should return the attached unique component in an array on length 1", function () {
@@ -581,17 +580,12 @@ define(
 								.addComponent('uniqueComponentC');
 
 							expect(typeof entity.getComponent('uniqueComponentA')).toEqual('object');
-							expect(typeof entity.getComponent('uniqueComponentA')[0]).toEqual('object');
-							expect(typeof entity.getComponent('uniqueComponentB')[0]).toEqual('object');
-							expect(typeof entity.getComponent('uniqueComponentC')[0]).toEqual('object');
+							expect(typeof entity.getComponent('uniqueComponentB')).toEqual('object');
+							expect(typeof entity.getComponent('uniqueComponentC')).toEqual('object');
 							
-							expect(entity.getComponent('uniqueComponentA').length).toEqual(1);
-							expect(entity.getComponent('uniqueComponentB').length).toEqual(1);
-							expect(entity.getComponent('uniqueComponentC').length).toEqual(1);
-							
-							expect(entity.getComponent('uniqueComponentA')[0].name).toEqual('component a');
-							expect(entity.getComponent('uniqueComponentB')[0].name).toEqual('component b');
-							expect(entity.getComponent('uniqueComponentC')[0].name).toEqual('component c');
+							expect(entity.getComponent('uniqueComponentA').name).toEqual('component a');
+							expect(entity.getComponent('uniqueComponentB').name).toEqual('component b');
+							expect(entity.getComponent('uniqueComponentC').name).toEqual('component c');
 							
 							expect(entity.getComponent('uniqueComponentD')).toBeFalsy();
 							expect(entity.getComponent('uniqueComponentD').data).toBeFalsy();

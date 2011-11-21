@@ -15,7 +15,7 @@ instance = Level.factory(
 	['levelSegment', 'some/cool/level.json', {name: 'first level'}],
 	['levelSegment', 'another/cool/level.json', {name: 'second level'}],
 	['levelSegment', 'yet/another/cool/level.json', {name: 'third level'}],
-	['pathfindable', undefined, undefined, 'dijkstra']
+	['pathfindable', 'dijkstra']
 );
 
 */

@@ -105,7 +105,7 @@ define(
 									}
 									
 									// We're now going to append this flow-js request.
-									entity.getComponent('flow-js-handle')[0].flowAppend(function () {
+									entity.getComponent('flow-js-handle').flowAppend(function () {
 										componentAttachData = underscore.toArray(arguments);
 										componentAttachData.unshift(component);
 										
@@ -160,27 +160,26 @@ define(
 							if (entityComponent[this.getId()] !== undefined &&
 								entityComponent[this.getId()][name] !== undefined
 							) {
-								var 
-									response, 
-									data = entityComponent[this.getId()][name];
+								var data = entityComponent[this.getId()][name];
 								
+								// If the entry is a unique item, then return 
+								// it, otherwise wrap it in a callback that 
+								// provides an each function.
 								if (typeof data === 'object' &&
 									data.length === undefined
 								) {
-									response = [data];
+									return data;
 									
 								} else {
-									response = data;
-								}
-								
-								return Compose.call(response, {
-									each: function (callback) {
-										var i, ii;
-										for (i = 0, ii = this.length; i < ii; i += 1) {
-											callback(this[i]);
+									return Compose.call(data, {
+										each: function (callback) {
+											var i, ii;
+											for (i = 0, ii = this.length; i < ii; i += 1) {
+												callback(this[i]);
+											}
 										}
-									}
-								});
+									});
+								}
 							}
 							
 							return false;
