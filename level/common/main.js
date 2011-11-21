@@ -23,6 +23,9 @@ define(
 		'thorny!level>networker/file',
 		'thorny!level>networker/adjacent',
 		
+		// Models
+		'thorny!level>level.model',
+		
 		// Components - Note if you add more components don't forget to update
 		//              the loadedComponents variable below.
 		'thorny!level>level.component',
@@ -36,7 +39,7 @@ define(
 		underscore,
 		LevelSegment
 	) {
-		var Level, defaultOptions, numberOfAddons, loadedComponents = 2;
+		var Level, defaultOptions, numberOfAddons, loadedComponents = 3;
 		
 		/**
 		 * Used to allow a user to customise level options.
