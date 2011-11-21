@@ -1,6 +1,34 @@
 /*global window console*/
 (function (require, undefined) {
-	require([], function () {
+	require(
+		[
+			'thorny',
+			'thorny!model>main',
+			'thorny!level>main',
+			'thorny!event'
+		], 
+		function (
+			Thorny,
+			Model,
+			Level,
+			event
+		) {
+			var level = Model.select('level')
+				.factory(
+					['level-segment', 'tests/fixtures/levels/poly2/001.json'],
+					['level-segment', 'tests/fixtures/levels/poly2/002.json']
+					)
+				.triggers('level-loaded');
+				
+			// Localise the Level, this bit needs some work, as its ugly :\
+			level = level.getComponent('level')[0].getLevel();
+			
+			event.bind('level-loaded', function () {
+				console.log(level.getSegment('001').getName());
+			});
+			
+			
+			
 		/*
 		Toying with how to implement the astar system...
 		
@@ -141,5 +169,6 @@
 			});
 		});
 		*/
-	});
+		}
+	);
 }(typeof window === 'undefined' ? require('./lib/r') : require));
