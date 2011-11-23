@@ -13,18 +13,20 @@
 			Level,
 			event
 		) {
-			var level = Model.select('level')
+			var world = Model.select('level')
 				.factory(
 					['level-segment', 'tests/fixtures/levels/poly2/001.json'],
 					['level-segment', 'tests/fixtures/levels/poly2/002.json']
 					)
 				.triggers('level-loaded');
-				
-			// Localise the Level, this bit needs some work, as its ugly :\
-			level = level.getComponent('level').getLevel();
 			
 			event.bind('level-loaded', function () {
-				console.log(level.getSegment('001').getName());
+				console.log(
+					world
+						.getComponent('level')
+						.getSegment('001')
+						.getName()
+					);
 			});
 			
 			
