@@ -108,6 +108,12 @@ define(
 						this
 						)
 					);
+				
+				// We will need a vector2 to check to see if a point is shape 
+				// within a shape using the isVector2Internal function.
+				// To save from creating and destroying objects at run time
+				// we're using a locally cached Vector2.
+				this.data('search-vector2', new Vector2(0, 0));
 			},
 			{
 				/**
@@ -173,6 +179,48 @@ define(
 						return false;
 					}
 					return this.data('edges')[shapeId][pointId];
+				},
+				
+				/**
+				 * Used to find a shape within a LevelSegment
+				 * @param integer x Contains the x coordinate of the search
+				 * @param integer y Contains the y coordinate of the search
+				 * @return integer|false If point exists returns its id, 
+				 *         otherwise returns false
+				 */
+				search: function (x, y) {
+					var levelSegment = this, found_shape_id = false;
+					
+					// Makesure the point is within the bounds of this 
+					// LevelSegment.
+					if (x < levelSegment.data('region').minx || x > levelSegment.data('region').maxx ||
+						y < levelSegment.data('region').miny || y > levelSegment.data('region').maxy
+					) {
+						return false;
+					}
+					
+					// Loop over all of the shape data
+					underscore.each(levelSegment.data('shapes'), function (shape, shape_id) {
+						// Prevent any more calls to isVector2Internal than 
+						// are needed.
+						if (found_shape_id !== false) {
+							return;
+						}
+						
+						// Check to see if the point is within this shape.
+						var isInternal = shape.isVector2Internal(
+							levelSegment.data('search-vector2')
+								.setX(x)
+								.setY(y)
+							);
+						
+						// If it is then record its id
+						if (isInternal) {
+							found_shape_id = shape_id;
+						}
+					});
+					
+					return found_shape_id;
 				}
 			}
 		);

@@ -3,6 +3,8 @@ define(
 	[
 		'thorny',
 		'thorny!level>level-segment',
+		'thorny!model>main',
+		'thorny!event',
 		'thorny!math/vector2',
 		'thorny!math/poly2',
 		'thorny!math/tile2',
@@ -11,6 +13,8 @@ define(
 	function (
 		Thorny,
 		LevelSegment,
+		Model,
+		event,
 		Vector2,
 		Poly2,
 		Tile2,
@@ -1036,6 +1040,7 @@ define(
 					expect(typeof ls.getShapeById).toEqual('function');
 					expect(typeof ls.flagEdge).toEqual('function');
 					expect(typeof ls.isEdge).toEqual('function');
+					expect(typeof ls.search).toEqual('function');
 				});// it should have the following functions
 				
 				describe('has the following function,', function () {
@@ -1437,6 +1442,48 @@ define(
 							expect(segment.isEdge(99, 99)).toBeFalsy();
 						});// it should return false if trying to access an unknown shape/point
 					});// desc the isEdge function
+					
+					describe('the search function', function () {
+						it('it should allow a LevelSegment to be searched', function () {
+							var world, ran = false;
+							
+							world = Model.select('level')
+								.factory(
+									['level-segment', 'tests/fixtures/levels/poly2/001.json']
+									)
+								.triggers('the segment search function - loaded');
+							
+							event.bind('the segment search function - loaded', function () {
+								// Localise the LevelSegment
+								var segment = world
+									.getComponent('level')
+									.getSegment('001');
+								
+								expect(segment.search(10, 10)).toEqual(0);
+								expect(segment.search(90, 10)).toEqual(0);
+								expect(segment.search(10, 90)).toEqual(0);
+								expect(segment.search(90, 90)).toEqual(0);
+								expect(segment.search(110, 10)).toEqual(1);
+								expect(segment.search(190, 10)).toEqual(1);
+								expect(segment.search(110, 90)).toEqual(1);
+								expect(segment.search(190, 90)).toEqual(1);
+								expect(segment.search(10, 110)).toEqual(2);
+								expect(segment.search(90, 110)).toEqual(2);
+								expect(segment.search(10, 190)).toEqual(2);
+								expect(segment.search(90, 190)).toEqual(2);
+								expect(segment.search(110, 110)).toEqual(3);
+								expect(segment.search(190, 110)).toEqual(3);
+								expect(segment.search(110, 190)).toEqual(3);
+								expect(segment.search(190, 190)).toEqual(3);
+								
+								ran = true;
+							});
+							
+							waitsFor(function () {
+								return ran;
+							});
+						});// it should allow a LevelSegment to be searched
+					});// the search function
 				});// desc has the following function
 			});// desc once instantiated
 		});// desc The Level-Segment Object

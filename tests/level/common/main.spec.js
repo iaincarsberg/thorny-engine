@@ -3,6 +3,7 @@ define(
 	[
 		'thorny',
 		'thorny!entity-system>main',
+		'thorny!model>main',
 		'thorny!event',
 		'thorny!level>main',
 		'thorny!level>level-segment',
@@ -12,6 +13,7 @@ define(
 	function (
 		Thorny,
 		Entity,
+		Model,
 		event,
 		Level,
 		LevelSegment,
@@ -39,6 +41,7 @@ define(
 					expect(typeof level.getSegment).toEqual('function');
 					expect(typeof level.removeSegment).toEqual('function');
 					expect(typeof level.getSegmentFormat).toEqual('function');
+					expect(typeof level.search).toEqual('function');
 				});// it should have the following functions
 				
 				describe('has the following function,', function () {
@@ -214,6 +217,73 @@ define(
 							expect(level.getSegmentFormat()).toEqual('thorny!math/vector2');
 						});// it should allow the segment format to be replaced on level instantiation
 					});// desc the getSegmentFormat function
+					
+					describe('the search function', function () {
+						it('it should search the Level Entity for a specific shape within its LevelSegment', function () {
+							var level, ran = false;
+							
+							level = Model.select('level')
+								.factory(
+									['level-segment', 'tests/fixtures/levels/poly2/001.json'],
+									['level-segment', 'tests/fixtures/levels/poly2/002.json']
+									)
+								.triggers('the search function - loaded');
+							
+							event.bind('the search function - loaded', function () {
+								/*
+								Note:
+								001 and 002 are offset, so they look like
+								
+								----
+								|  |
+								|  |----
+								----|  |
+								    |  |
+								    ----
+								*/
+								
+								expect(level.getComponent('level').search(10, 10)).toEqual(['001', 0]);
+								expect(level.getComponent('level').search(90, 10)).toEqual(['001', 0]);
+								expect(level.getComponent('level').search(10, 90)).toEqual(['001', 0]);
+								expect(level.getComponent('level').search(90, 90)).toEqual(['001', 0]);
+								expect(level.getComponent('level').search(110, 10)).toEqual(['001', 1]);
+								expect(level.getComponent('level').search(190, 10)).toEqual(['001', 1]);
+								expect(level.getComponent('level').search(110, 90)).toEqual(['001', 1]);
+								expect(level.getComponent('level').search(190, 90)).toEqual(['001', 1]);
+								expect(level.getComponent('level').search(10, 110)).toEqual(['001', 2]);
+								expect(level.getComponent('level').search(90, 110)).toEqual(['001', 2]);
+								expect(level.getComponent('level').search(10, 190)).toEqual(['001', 2]);
+								expect(level.getComponent('level').search(90, 190)).toEqual(['001', 2]);
+								expect(level.getComponent('level').search(110, 110)).toEqual(['001', 3]);
+								expect(level.getComponent('level').search(190, 110)).toEqual(['001', 3]);
+								expect(level.getComponent('level').search(110, 190)).toEqual(['001', 3]);
+								expect(level.getComponent('level').search(190, 190)).toEqual(['001', 3]);
+								
+								expect(level.getComponent('level').search(210, 10)).toBeFalsy();
+								expect(level.getComponent('level').search(290, 10)).toBeFalsy();
+								expect(level.getComponent('level').search(210, 90)).toBeFalsy();
+								expect(level.getComponent('level').search(290, 90)).toBeFalsy();
+								expect(level.getComponent('level').search(310, 10)).toBeFalsy();
+								expect(level.getComponent('level').search(390, 10)).toBeFalsy();
+								expect(level.getComponent('level').search(310, 90)).toBeFalsy();
+								expect(level.getComponent('level').search(390, 90)).toBeFalsy();
+								expect(level.getComponent('level').search(210, 110)).toEqual(['002', 0]);
+								expect(level.getComponent('level').search(290, 110)).toEqual(['002', 0]);
+								expect(level.getComponent('level').search(210, 190)).toEqual(['002', 0]);
+								expect(level.getComponent('level').search(290, 190)).toEqual(['002', 0]);
+								expect(level.getComponent('level').search(310, 110)).toEqual(['002', 1]);
+								expect(level.getComponent('level').search(390, 110)).toEqual(['002', 1]);
+								expect(level.getComponent('level').search(310, 190)).toEqual(['002', 1]);
+								expect(level.getComponent('level').search(390, 190)).toEqual(['002', 1]);
+								
+								ran = true;
+							});
+							
+							waitsFor(function () {
+								return ran;
+							});
+						});// it should search the Level Entity for a specific shape within its LevelSegment
+					});// desc the search function
 				});// desc has the following function,
 			});// desc once instantiated
 		});// desc The Level Base Object

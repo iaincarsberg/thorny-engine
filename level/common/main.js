@@ -167,6 +167,39 @@ define(
 				 */
 				getSegmentFormat: function () {
 					return this.options.format;
+				},
+				
+				/**
+				 * Used to find a shape within the loaded LevelSegments
+				 * @param integer x Contains the x coordinate of the search
+				 * @param integer y Contains the y coordinate of the search
+				 * @return array|false If point is within the Level it returns
+				 *         an array containing the [segmentName, shapeId];
+				 */
+				search: function (x, y) {
+					var found_segment_id = false;
+					
+					underscore.each(this.data('segments'), function (segment, segment_id) {
+						// Prevent any more calls to segment.search than 
+						// are needed.
+						if (found_segment_id !== false) {
+							return;
+						}
+						
+						// Check to see if the point is within this segment.
+						var found_shape_id = segment.search(x, y);
+						
+						// If a shape_id was found then we need to update the 
+						// found_segment_id value.
+						if (found_shape_id !== false) {
+							found_segment_id = [
+								segment_id,
+								found_shape_id
+							];
+						}
+					});
+					
+					return found_segment_id;
 				}
 			}
 		);
