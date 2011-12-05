@@ -203,7 +203,7 @@ define(
 				},
 
 				/**
-				 * Used to rotate a normalized vector around a get point.
+				 * Used to rotate a normalized vector around a set point.
 				 * @param double n Containing the rotation amount
 				 * @return this, to allow object chaining
 				 */
@@ -254,10 +254,12 @@ define(
 		 * @param Vector2 v2 Contains the second point in line one
 		 * @param Vector2 v3 Contains the first point in line two
 		 * @param Vector2 v4 Contains the second point in line two
+		 * @param boolean withinBounds Allows intersections to be found 
+		 *        outside of the bounds of either segment
 		 * @return obj|false if intersection happened returns array of x/y 
 		 * otherwise fales.
 		 */
-		Vector2.lineIntersection = function (v1, v2, v3, v4) {
+		Vector2.lineIntersection = function (v1, v2, v3, v4, withinBounds) {
 			var 
 				bx,
 				by, 
@@ -268,7 +270,12 @@ define(
 				cy,
 				t,
 				u;
-
+				
+			// Default withinBounds to true
+			if (withinBounds === undefined) {
+				withinBounds = true;
+			}
+			
 			bx = v2.getX() - v1.getX();
 			by = v2.getY() - v1.getY();
 			dx = v4.getX() - v3.getX();
@@ -282,14 +289,18 @@ define(
 			cx = v3.getX() - v1.getX();
 			cy = v3.getY() - v1.getY();
 			t = (cx * dy - cy * dx) / b_dot_d_perp;
-
-			if (t < 0 || t > 1) {
+			
+			if (withinBounds &&
+				(t < 0 || t > 1)
+			) {
 				return false;
 			}
 
 			u = (cx * by - cy * bx) / b_dot_d_perp;
 
-			if (u < 0 || u > 1) {
+			if (withinBounds &&
+				(u < 0 || u > 1)
+			) {
 				return false;
 			}	
 

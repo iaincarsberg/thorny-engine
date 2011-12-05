@@ -791,6 +791,19 @@ define(
 							Vector2.lineIntersection(v1, v2, v3, v4)
 							).toBeFalsy();
 					});// it should't detect any intersection
+					
+					it('it should detect a projected intersection', function () {
+						var
+							v1 = new Vector2(0, 10),
+							v2 = new Vector2(5, 10),
+							v3 = new Vector2(10, 0),
+							v4 = new Vector2(10, 5);
+						
+						expect(
+							Vector2.lineIntersection(v1, v2, v3, v4, false)
+								.getSimpleCoords()
+							).toEqual([10, 10]);
+					});
 				});// endof lineIntersection
 				
 				describe('centroid', function () {
