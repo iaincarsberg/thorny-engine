@@ -41,7 +41,7 @@ define(
 				underscore.each(
 					localSegment.getNetworkedNeighbours(), 
 					function (connection) {
-						var distance, target, local;
+						var distance, target, local, localEdge, targetEdge;
 						
 						// Makesure the connection is valid.
 						if (connection.target           === undefined ||
@@ -95,33 +95,37 @@ define(
 						
 						level.data('network')[targetSegment.getName()][localSegment.getName()] = {
 							distance:    distance,
-							localShape:  target,
-							targetShape: local
+							localShape:  connection.targetShapeId,
+							targetShape: connection.localShapeId
 						};
 						level.data('network')[localSegment.getName()][targetSegment.getName()] = {
 							distance:    distance,
-							localShape:  local,
-							targetShape: target
+							localShape:  connection.localShapeId,
+							targetShape: connection.targetShapeId
 						};
+						
+						// Localise the edges
+						localEdge = LevelSegment.edgePicker(
+							connection.localVector2Id1,
+							connection.localVector2Id2
+						);
+						targetEdge = LevelSegment.edgePicker(
+							connection.targetVector2Id1,
+							connection.targetVector2Id2
+						);
 						
 						// Flag the edges as clear on the newly attached 
 						// LevelSegments.
-						targetSegment.flagEdge(
-							connection.targetShapeId, 
-							LevelSegment.edgePicker(
-								connection.targetVector2Id1,
-								connection.targetVector2Id2
-								),
-							false
+						localSegment.setEdge(
+							connection.localShapeId, 
+							localEdge,
+							[targetSegment.getName(), connection.targetShapeId, targetEdge]
 							);
 						
-						localSegment.flagEdge(
-							connection.localShapeId, 
-							LevelSegment.edgePicker(
-								connection.localVector2Id1,
-								connection.localVector2Id2
-								),
-							false
+						targetSegment.setEdge(
+							connection.targetShapeId, 
+							targetEdge,
+							[localSegment.getName(), connection.localShapeId, localEdge]
 							);
 					}
 				);

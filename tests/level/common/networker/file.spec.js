@@ -78,38 +78,37 @@ define(
 				baseSegment = level.data('network')['base segment']['new segment'];
 				expect(underscore.isObject(baseSegment)).toBeTruthy();
 				expect(typeof baseSegment.distance).toEqual('number');
-				expect(baseSegment.localShape instanceof Poly2).toBeTruthy();
-				expect(baseSegment.targetShape instanceof Poly2).toBeTruthy();
+				expect(underscore.isNumber(baseSegment.localShape)).toBeTruthy();
+				expect(underscore.isNumber(baseSegment.targetShape)).toBeTruthy();
 				
 				expect(baseSegment.distance).toEqual(100);
-				expect(baseSegment.localShape.getSimpleCoords()).toEqual([50, 50]);
-				expect(baseSegment.targetShape.getSimpleCoords()).toEqual([150, 50]);
+				expect(baseSegment.localShape).toEqual(0);
+				expect(baseSegment.targetShape).toEqual(0);
 				
 				// Check the "new segment" entry
 				newSegment = level.data('network')['new segment']['base segment'];
-				
 				expect(underscore.isObject(newSegment)).toBeTruthy();
 				expect(typeof newSegment.distance).toEqual('number');
-				expect(newSegment.localShape instanceof Poly2).toBeTruthy();
-				expect(newSegment.targetShape instanceof Poly2).toBeTruthy();
+				expect(underscore.isNumber(newSegment.localShape)).toBeTruthy();
+				expect(underscore.isNumber(newSegment.targetShape)).toBeTruthy();
 				
 				expect(newSegment.distance).toEqual(100);
-				expect(newSegment.localShape.getSimpleCoords()).toEqual([150, 50]);
-				expect(newSegment.targetShape.getSimpleCoords()).toEqual([50, 50]);
+				expect(newSegment.localShape).toEqual(0);
+				expect(newSegment.targetShape).toEqual(0);
 				
 				describe('during which it should mark edges as being non-edges', function () {
 					it('it should have marked the following as such', function () {
 						var baseSegmentEdges = level.getSegment('base segment');
 						
-						expect(baseSegmentEdges.isEdge(0, 0)).toBeTruthy();
-						expect(baseSegmentEdges.isEdge(0, 1)).toBeFalsy();
-						expect(baseSegmentEdges.isEdge(0, 2)).toBeTruthy();
-						expect(baseSegmentEdges.isEdge(0, 3)).toBeTruthy();
+						expect(baseSegmentEdges.isOpenEdge(0, 0)).toBeFalsy();
+						expect(baseSegmentEdges.isOpenEdge(0, 1)).toEqual([segment.getName(), 0, 3]);
+						expect(baseSegmentEdges.isOpenEdge(0, 2)).toBeFalsy();
+						expect(baseSegmentEdges.isOpenEdge(0, 3)).toBeFalsy();
 						
-						expect(segment.isEdge(0, 0)).toBeTruthy();
-						expect(segment.isEdge(0, 1)).toBeTruthy();
-						expect(segment.isEdge(0, 2)).toBeTruthy();
-						expect(segment.isEdge(0, 3)).toBeFalsy();
+						expect(segment.isOpenEdge(0, 0)).toBeFalsy();
+						expect(segment.isOpenEdge(0, 1)).toBeFalsy();
+						expect(segment.isOpenEdge(0, 2)).toBeFalsy();
+						expect(segment.isOpenEdge(0, 3)).toEqual([baseSegmentEdges.getName(), 0, 1]);
 					});// it should have marked the following as such
 				});// during which it should mark edges as being non-edges
 			});// it should network two simple Poly2 square LevelSegments together
