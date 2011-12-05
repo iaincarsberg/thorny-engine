@@ -125,13 +125,13 @@ define(
 						
 						// Flag the edges as clear on the newly attached 
 						// LevelSegments.
-						targetSegment.flagEdge(
+						targetSegment.setEdge(
 							connection.targetShapeId, 
 							LevelSegment.edgePicker(
 								connection.targetVector2Id1,
 								connection.targetVector2Id2
 								),
-							true
+							false
 							);
 					});
 					
@@ -167,6 +167,31 @@ define(
 				 */
 				getSegmentFormat: function () {
 					return this.options.format;
+				},
+				
+				/**
+				 * Used to expose the level format.
+				 * @param function callback Used to continue execution of 
+				 * whatever requires the level format.
+				 * @return object Containing the format object
+				 */
+				getSegmentFormatObject: function (callback) {
+					var level = this;
+					
+					// If the format has been loaded then return it.
+					if (level.data('format')) {
+						return callback(level.data('format'));
+					}
+					
+					// Require the segment format, and localise it into the 
+					// format data slot, for quick access later on.
+					require(
+						[level.getSegmentFormat()], 
+						function (format) {
+							level.data('format', format);
+							return callback(level.data('format'));
+						}
+					);
 				},
 				
 				/**
