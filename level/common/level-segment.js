@@ -98,6 +98,15 @@ define(
 						)
 					);
 				
+				// Setup the length of each edge within the shape
+				this.data(
+					'edge-lengths',
+					LevelSegment.instantiateEdgeLengths(
+						Format,
+						this.data('shapes')
+						)
+					);
+				
 				// Build the network hash, which contains a hash of the
 				// distances between each of the shapes within this
 				// LevelSegment.
@@ -152,10 +161,10 @@ define(
 				 * @param boolean state Contains the new state
 				 * @return this to allow object chaining
 				 */
-				flagEdge: function (shapeId, pointId, state) {
+				setEdge: function (shapeId, pointId, state) {
 					// Default the state to true;
 					if (state === undefined) {
-						state = true;
+						state = false;
 					}
 					
 					if (this.data('edges')[shapeId] !== undefined &&
@@ -172,13 +181,60 @@ define(
 				 * @param int pointId Contains the point within the shape
 				 * @return boolean True if edge, otherwise False
 				 */
-				isEdge: function (shapeId, pointId) {
+				isOpenEdge: function (shapeId, pointId) {
 					if (this.data('edges')[shapeId] === undefined ||
 						this.data('edges')[shapeId][pointId] === undefined
 					) {
 						return false;
 					}
 					return this.data('edges')[shapeId][pointId];
+				},
+				
+				/**
+				 * Used to get the length of an edge
+				 * @param int shapeId Contains the shape within LevelSegment
+				 * @param int pointId Contains the point within the shape
+				 * @return float Containing the edge length
+				 */
+				edgeLength: function (shapeId, pointId) {
+					if (this.data('edge-lengths')[shapeId] === undefined ||
+						this.data('edge-lengths')[shapeId][pointId] === undefined
+					) {
+						return false;
+					}
+					return this.data('edge-lengths')[shapeId][pointId];
+				},
+				
+				/**
+				 * Used to search for a remote link, and return the edge length
+				 * @param string name Contains the name of a remote LevelSegment
+				 * @param int shapeId Contains the shape within the remote LevelSegment
+				 * @param int pointId Contains the point within the remote shape
+				 * @return float Containing the edge length
+				 */
+				searchEdgeLength: function (name, shapeId, pointId) {
+					var length = false, 
+						segment = this;
+					
+					underscore.each(segment.data('edges'), function (row, rowId) {
+						underscore.each(row, function (cell, colId) {
+							if (! cell || 
+								! underscore.isArray(cell) ||
+								cell.length !== 3
+							) {
+								return;
+							}
+							
+							if (cell[0] === name &&
+								cell[1] === shapeId &&
+								cell[2] === pointId
+							) {
+								length = segment.edgeLength(rowId, colId);
+							}
+						});
+					});
+					
+					return length;
 				},
 				
 				/**
@@ -450,7 +506,7 @@ define(
 			
 			underscore.each(shapes, function (a, aId) {
 				underscore.each(shapes, function (b, bId) {
-					var shared;
+					var shared, localEdge, remoteEdge;
 					
 					// Prevent shapes networking to themselves
 					if (a === b || aId > bId) {
@@ -483,8 +539,23 @@ define(
 							shared.local.length === 2 &&
 							shared.remote.length === 2
 						) {
-							instance.flagEdge(aId, LevelSegment.edgePicker(shared.local[0], shared.local[1]), false);
-							instance.flagEdge(bId, LevelSegment.edgePicker(shared.remote[0], shared.remote[1]), false);
+							// Localise the edges
+							localEdge  = LevelSegment.edgePicker(shared.local[0], shared.local[1]);
+							remoteEdge = LevelSegment.edgePicker(shared.remote[0], shared.remote[1]);
+							
+							// Set the local edge to point to the remote edge
+							instance.setEdge(
+								aId, 
+								localEdge,
+								[instance.getName(), bId, remoteEdge]
+								);
+							
+							// Set the remote edge to point to the local edge
+							instance.setEdge(
+								bId, 
+								remoteEdge,
+								[instance.getName(), aId, localEdge]
+								);
 						}
 					}
 				});
@@ -563,7 +634,7 @@ define(
 		 * Used to setup edges within a shape
 		 * @param Thorny Format Used to find the length of a specific shape
 		 * @param array shapes Contains all shapes within the LevelSegment
-		 * @return void
+		 * @return array Containing edges
 		 */
 		LevelSegment.instantiateEdges = function (Format, shapes) {
 			var edges = [];
@@ -571,12 +642,36 @@ define(
 				var i, ii, edge = [];
 
 				for (i = 0, ii = Format.getLength(shape); i < ii; i += 1) {
-					edge.push(true);
+					edge.push(false);
 				}
 				
 				edges.push(edge);
 			});
 			return edges;
+		};
+		
+		/**
+		 * Used to setup edge lengths within a shape
+		 * @param Thorny Format Used to find the length of a specific shape
+		 * @param array shapes Contains all shapes within the LevelSegment
+		 * @return array Containing edge lengths
+		 */
+		LevelSegment.instantiateEdgeLengths = function (Format, shapes) {
+			var i, ii, vector2s, vector2sLength, lengths = [], length;
+			
+			underscore.each(shapes, function (shape, id) {
+				vector2s = shape.getVector2s();
+				vector2sLength = vector2s.length;
+				length = [];
+				
+				for (i = 0, ii = vector2sLength; i < ii; i += 1) {
+					length.push(
+						vector2s[i].distance(vector2s[(i + 1) % vector2sLength])
+						);
+				}
+				lengths.push(length);
+			});
+			return lengths;
 		};
 		
 		/**

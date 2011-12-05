@@ -32,6 +32,7 @@ define(
 					expect(typeof LevelSegment.vector2WithinLevelSegment).toEqual('function');
 					expect(typeof LevelSegment.setupNetworkedNeighbours).toEqual('function');
 					expect(typeof LevelSegment.instantiateEdges).toEqual('function');
+					expect(typeof LevelSegment.instantiateEdgeLengths).toEqual('function');
 					expect(typeof LevelSegment.edgePicker).toEqual('function');
 				});// it should have the following functions
 				
@@ -547,21 +548,21 @@ define(
 								}
 							);
 							
-							expect(ls.isEdge(0, 0)).toBeTruthy();
-							expect(ls.isEdge(0, 1)).toBeFalsy();
-							expect(ls.isEdge(0, 2)).toBeTruthy();
+							expect(ls.isOpenEdge(0, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(0, 1)).toEqual([ls.getName(), 1, 2]);
+							expect(ls.isOpenEdge(0, 2)).toBeFalsy();
 							
-							expect(ls.isEdge(1, 0)).toBeFalsy();
-							expect(ls.isEdge(1, 1)).toBeTruthy();
-							expect(ls.isEdge(1, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(1, 0)).toEqual([ls.getName(), 2, 2]);
+							expect(ls.isOpenEdge(1, 1)).toBeFalsy();
+							expect(ls.isOpenEdge(1, 2)).toEqual([ls.getName(), 0, 1]);
 							
-							expect(ls.isEdge(2, 0)).toBeTruthy();
-							expect(ls.isEdge(2, 1)).toBeFalsy();
-							expect(ls.isEdge(2, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(2, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(2, 1)).toEqual([ls.getName(), 3, 2]);
+							expect(ls.isOpenEdge(2, 2)).toEqual([ls.getName(), 1, 0]);
 							
-							expect(ls.isEdge(3, 0)).toBeTruthy();
-							expect(ls.isEdge(3, 1)).toBeTruthy();
-							expect(ls.isEdge(3, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 1)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 2)).toEqual([ls.getName(), 2, 1]);
 						});// it should automatically update the edges during networking, this Poly2 triangle chain
 						
 						it('it should automatically update the edges during networking, this Poly2 square square', function () {
@@ -597,25 +598,25 @@ define(
 								}
 							);
 							
-							expect(ls.isEdge(0, 0)).toBeTruthy();
-							expect(ls.isEdge(0, 1)).toBeFalsy();
-							expect(ls.isEdge(0, 2)).toBeFalsy();
-							expect(ls.isEdge(0, 3)).toBeTruthy();
+							expect(ls.isOpenEdge(0, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(0, 1)).toEqual([ls.getName(), 1, 3]);
+							expect(ls.isOpenEdge(0, 2)).toEqual([ls.getName(), 2, 0]);
+							expect(ls.isOpenEdge(0, 3)).toBeFalsy();
 							
-							expect(ls.isEdge(1, 0)).toBeTruthy();
-							expect(ls.isEdge(1, 1)).toBeTruthy();
-							expect(ls.isEdge(1, 2)).toBeFalsy();
-							expect(ls.isEdge(1, 3)).toBeFalsy();
+							expect(ls.isOpenEdge(1, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(1, 1)).toBeFalsy();
+							expect(ls.isOpenEdge(1, 2)).toEqual([ls.getName(), 3, 0]);
+							expect(ls.isOpenEdge(1, 3)).toEqual([ls.getName(), 0, 1]);
 							
-							expect(ls.isEdge(2, 0)).toBeFalsy();
-							expect(ls.isEdge(2, 1)).toBeFalsy();
-							expect(ls.isEdge(2, 2)).toBeTruthy();
-							expect(ls.isEdge(2, 3)).toBeTruthy();
+							expect(ls.isOpenEdge(2, 0)).toEqual([ls.getName(), 0, 2]);
+							expect(ls.isOpenEdge(2, 1)).toEqual([ls.getName(), 3, 3]);
+							expect(ls.isOpenEdge(2, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(2, 3)).toBeFalsy();
 							
-							expect(ls.isEdge(3, 0)).toBeFalsy();
-							expect(ls.isEdge(3, 1)).toBeTruthy();
-							expect(ls.isEdge(3, 2)).toBeTruthy();
-							expect(ls.isEdge(3, 3)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 0)).toEqual([ls.getName(), 1, 2]);
+							expect(ls.isOpenEdge(3, 1)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 3)).toEqual([ls.getName(), 2, 1]);
 						});// it should automatically update the edges during networking, this Poly2 square square
 						
 						it('it should automatically update the edges during network, this Tile2 based segment', function () {
@@ -631,25 +632,25 @@ define(
 								}
 							);
 							
-							expect(ls.isEdge(0, 0)).toBeFalsy();
-							expect(ls.isEdge(0, 1)).toBeFalsy();
-							expect(ls.isEdge(0, 2)).toBeTruthy();
-							expect(ls.isEdge(0, 3)).toBeTruthy();
+							expect(ls.isOpenEdge(0, 0)).toEqual([ls.getName(), 1, 2]);
+							expect(ls.isOpenEdge(0, 1)).toEqual([ls.getName(), 2, 3]);
+							expect(ls.isOpenEdge(0, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(0, 3)).toBeFalsy();
 							
-							expect(ls.isEdge(1, 0)).toBeTruthy();
-							expect(ls.isEdge(1, 1)).toBeFalsy();
-							expect(ls.isEdge(1, 2)).toBeFalsy();
-							expect(ls.isEdge(1, 3)).toBeTruthy();
+							expect(ls.isOpenEdge(1, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(1, 1)).toEqual([ls.getName(), 3, 3]);
+							expect(ls.isOpenEdge(1, 2)).toEqual([ls.getName(), 0, 0]);
+							expect(ls.isOpenEdge(1, 3)).toBeFalsy();
 							
-							expect(ls.isEdge(2, 0)).toBeFalsy();
-							expect(ls.isEdge(2, 1)).toBeTruthy();
-							expect(ls.isEdge(2, 2)).toBeTruthy();
-							expect(ls.isEdge(2, 3)).toBeFalsy();
+							expect(ls.isOpenEdge(2, 0)).toEqual([ls.getName(), 3, 2]);
+							expect(ls.isOpenEdge(2, 1)).toBeFalsy();
+							expect(ls.isOpenEdge(2, 2)).toBeFalsy();
+							expect(ls.isOpenEdge(2, 3)).toEqual([ls.getName(), 0, 1]);
 							
-							expect(ls.isEdge(3, 0)).toBeTruthy();
-							expect(ls.isEdge(3, 1)).toBeTruthy();
-							expect(ls.isEdge(3, 2)).toBeFalsy();
-							expect(ls.isEdge(3, 3)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 0)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 1)).toBeFalsy();
+							expect(ls.isOpenEdge(3, 2)).toEqual([ls.getName(), 2, 0]);
+							expect(ls.isOpenEdge(3, 3)).toEqual([ls.getName(), 1, 1]);
 						});// it should automatically update the edges during network, this Tile2 based segment
 					});// desc has an effect on the instantiation process
 				});// desc the networkShapes function
@@ -957,24 +958,24 @@ define(
 						
 						expect(underscore.isArray(edges[0])).toBeTruthy();
 						expect(edges[0].length).toEqual(3);
-						expect(edges[0][0]).toBeTruthy();
-						expect(edges[0][1]).toBeTruthy();
-						expect(edges[0][2]).toBeTruthy();
+						expect(edges[0][0]).toBeFalsy();
+						expect(edges[0][1]).toBeFalsy();
+						expect(edges[0][2]).toBeFalsy();
 						
 						expect(underscore.isArray(edges[1])).toBeTruthy();
 						expect(edges[1].length).toEqual(4);
-						expect(edges[1][0]).toBeTruthy();
-						expect(edges[1][1]).toBeTruthy();
-						expect(edges[1][2]).toBeTruthy();
-						expect(edges[1][2]).toBeTruthy();
+						expect(edges[1][0]).toBeFalsy();
+						expect(edges[1][1]).toBeFalsy();
+						expect(edges[1][2]).toBeFalsy();
+						expect(edges[1][2]).toBeFalsy();
 						
 						expect(underscore.isArray(edges[2])).toBeTruthy();
 						expect(edges[2].length).toEqual(5);
-						expect(edges[2][0]).toBeTruthy();
-						expect(edges[2][1]).toBeTruthy();
-						expect(edges[2][2]).toBeTruthy();
-						expect(edges[2][2]).toBeTruthy();
-						expect(edges[2][2]).toBeTruthy();
+						expect(edges[2][0]).toBeFalsy();
+						expect(edges[2][1]).toBeFalsy();
+						expect(edges[2][2]).toBeFalsy();
+						expect(edges[2][2]).toBeFalsy();
+						expect(edges[2][2]).toBeFalsy();
 					});// it should setup the edges for a Poly2 based LevelSegment
 					
 					it('it should setup the edges for a Tile2 based LevelSegment', function () {
@@ -992,26 +993,62 @@ define(
 
 						expect(underscore.isArray(edges[0])).toBeTruthy();
 						expect(edges[0].length).toEqual(4);
-						expect(edges[0][0]).toBeTruthy();
-						expect(edges[0][1]).toBeTruthy();
-						expect(edges[0][2]).toBeTruthy();
-						expect(edges[0][3]).toBeTruthy();
+						expect(edges[0][0]).toBeFalsy();
+						expect(edges[0][1]).toBeFalsy();
+						expect(edges[0][2]).toBeFalsy();
+						expect(edges[0][3]).toBeFalsy();
 						
 						expect(underscore.isArray(edges[1])).toBeTruthy();
 						expect(edges[1].length).toEqual(4);
-						expect(edges[1][0]).toBeTruthy();
-						expect(edges[1][1]).toBeTruthy();
-						expect(edges[1][2]).toBeTruthy();
-						expect(edges[1][3]).toBeTruthy();
+						expect(edges[1][0]).toBeFalsy();
+						expect(edges[1][1]).toBeFalsy();
+						expect(edges[1][2]).toBeFalsy();
+						expect(edges[1][3]).toBeFalsy();
 						
 						expect(underscore.isArray(edges[2])).toBeTruthy();
 						expect(edges[2].length).toEqual(4);
-						expect(edges[2][0]).toBeTruthy();
-						expect(edges[2][1]).toBeTruthy();
-						expect(edges[2][2]).toBeTruthy();
-						expect(edges[2][3]).toBeTruthy();
+						expect(edges[2][0]).toBeFalsy();
+						expect(edges[2][1]).toBeFalsy();
+						expect(edges[2][2]).toBeFalsy();
+						expect(edges[2][3]).toBeFalsy();
 					});// it it should setup the edges for a Tile2 based LevelSegment
 				});// desc the instantiateEdges function
+				
+				describe('the instantiateEdgeLengths function', function () {
+					it('it should determine the length of all the edges within this LevelSegment', function () {
+						var edges = LevelSegment.instantiateEdgeLengths(
+							Poly2,
+							[
+								new Poly2(
+									new Vector2(0, 0),
+									new Vector2(100, 0),
+									new Vector2(100, 100)
+									),
+								new Poly2(
+									new Vector2(0, 0),
+									new Vector2(100, 0),
+									new Vector2(100, 100),
+									new Vector2(0, 100)
+									),
+								new Poly2(
+									new Vector2(0, 0),
+									new Vector2(100, 0),
+									new Vector2(100, 100),
+									new Vector2(100, 50),
+									new Vector2(0, 100)
+									)
+							]
+						);
+						
+						expect(underscore.isArray(edges)).toBeTruthy();
+						expect(edges.length).toEqual(3);
+						expect(edges).toEqual([
+							[ 100, 100, 141.4213562373095 ],
+							[ 100, 100, 100, 100 ],
+							[ 100, 100, 50, 111.80339887498948, 100 ]
+						]);
+					});// it should determine the length of all the edges within this LevelSegment
+				});// desc the instantiateEdgeLengths function
 				
 				describe('the edgePicker function', function () {
 					it('it should return the correct edge', function () {
@@ -1038,8 +1075,9 @@ define(
 					expect(typeof ls.getName).toEqual('function');
 					expect(typeof ls.getNetworkedNeighbours).toEqual('function');
 					expect(typeof ls.getShapeById).toEqual('function');
-					expect(typeof ls.flagEdge).toEqual('function');
-					expect(typeof ls.isEdge).toEqual('function');
+					expect(typeof ls.setEdge).toEqual('function');
+					expect(typeof ls.isOpenEdge).toEqual('function');
+					expect(typeof ls.edgeLength).toEqual('function');
 					expect(typeof ls.search).toEqual('function');
 				});// it should have the following functions
 				
@@ -1293,7 +1331,7 @@ define(
 						});// it should return a Tile2 from within the LevelSegment
 					});// desc the getShapeById function
 					
-					describe('the flagEdge function', function () {
+					describe('the setEdge function', function () {
 						it('it should alter the flag state within a LevelSegment', function () {
 							var data, segment = new LevelSegment(
 								Tile2,
@@ -1317,38 +1355,38 @@ define(
 							
 							// Flag some edges
 							segment
-								.flagEdge(0, 0, false)
-								.flagEdge(1, 0, false)
-								.flagEdge(1, 1, false)
-								.flagEdge(2, 0, false)
-								.flagEdge(2, 1, false)
-								.flagEdge(2, 2, false)
-								.flagEdge(3, 0, false)
-								.flagEdge(3, 1, false)
-								.flagEdge(3, 2, false)
-								.flagEdge(3, 3, false);
+								.setEdge(0, 0, true)
+								.setEdge(1, 0, true)
+								.setEdge(1, 1, true)
+								.setEdge(2, 0, true)
+								.setEdge(2, 1, true)
+								.setEdge(2, 2, true)
+								.setEdge(3, 0, true)
+								.setEdge(3, 1, true)
+								.setEdge(3, 2, true)
+								.setEdge(3, 3, true);
 							
 							data = segment.data('edges');
 							
-							expect(data[0][0]).toBeFalsy();
-							expect(data[0][1]).toBeTruthy();
-							expect(data[0][2]).toBeTruthy();
-							expect(data[0][3]).toBeTruthy();
+							expect(data[0][0]).toBeTruthy();
+							expect(data[0][1]).toBeFalsy();
+							expect(data[0][2]).toBeFalsy();
+							expect(data[0][3]).toBeFalsy();
 							
-							expect(data[1][0]).toBeFalsy();
-							expect(data[1][1]).toBeFalsy();
-							expect(data[1][2]).toBeTruthy();
-							expect(data[1][3]).toBeTruthy();
+							expect(data[1][0]).toBeTruthy();
+							expect(data[1][1]).toBeTruthy();
+							expect(data[1][2]).toBeFalsy();
+							expect(data[1][3]).toBeFalsy();
 							
-							expect(data[2][0]).toBeFalsy();
-							expect(data[2][1]).toBeFalsy();
-							expect(data[2][2]).toBeFalsy();
-							expect(data[2][3]).toBeTruthy();
+							expect(data[2][0]).toBeTruthy();
+							expect(data[2][1]).toBeTruthy();
+							expect(data[2][2]).toBeTruthy();
+							expect(data[2][3]).toBeFalsy();
 							
-							expect(data[3][0]).toBeFalsy();
-							expect(data[3][1]).toBeFalsy();
-							expect(data[3][2]).toBeFalsy();
-							expect(data[3][3]).toBeFalsy();
+							expect(data[3][0]).toBeTruthy();
+							expect(data[3][1]).toBeTruthy();
+							expect(data[3][2]).toBeTruthy();
+							expect(data[3][3]).toBeTruthy();
 						});// it should alter the flag state within a LevelSegment
 						
 						it("it shouldn't error if trying to get an unknown value", function () {
@@ -1364,13 +1402,13 @@ define(
 								}
 							);
 							
-							segment.flagEdge(99, 99, false);
+							segment.setEdge(99, 99, false);
 							
 							expect(true).toBeTruthy();
 						});// it shouldn't error if trying to get an unknown value
-					});// desc the flagEdge function
+					});// desc the setEdge function
 					
-					describe('the isEdge function', function () {
+					describe('the isOpenEdge function', function () {
 						it('it should return the correct value', function () {
 							var segment = new LevelSegment(
 								Tile2,
@@ -1394,36 +1432,36 @@ define(
 							
 							// Flag some edges
 							segment
-								.flagEdge(0, 0, false)
-								.flagEdge(1, 0, false)
-								.flagEdge(1, 1, false)
-								.flagEdge(2, 0, false)
-								.flagEdge(2, 1, false)
-								.flagEdge(2, 2, false)
-								.flagEdge(3, 0, false)
-								.flagEdge(3, 1, false)
-								.flagEdge(3, 2, false)
-								.flagEdge(3, 3, false);
+								.setEdge(0, 0, true)
+								.setEdge(1, 0, true)
+								.setEdge(1, 1, true)
+								.setEdge(2, 0, true)
+								.setEdge(2, 1, true)
+								.setEdge(2, 2, true)
+								.setEdge(3, 0, true)
+								.setEdge(3, 1, true)
+								.setEdge(3, 2, true)
+								.setEdge(3, 3, true);
 							
-							expect(segment.isEdge(0, 0)).toBeFalsy();
-							expect(segment.isEdge(0, 1)).toBeTruthy();
-							expect(segment.isEdge(0, 2)).toBeTruthy();
-							expect(segment.isEdge(0, 3)).toBeTruthy();
+							expect(segment.isOpenEdge(0, 0)).toBeTruthy();
+							expect(segment.isOpenEdge(0, 1)).toBeFalsy();
+							expect(segment.isOpenEdge(0, 2)).toBeFalsy();
+							expect(segment.isOpenEdge(0, 3)).toBeFalsy();
 							
-							expect(segment.isEdge(1, 0)).toBeFalsy();
-							expect(segment.isEdge(1, 1)).toBeFalsy();
-							expect(segment.isEdge(1, 2)).toBeTruthy();
-							expect(segment.isEdge(1, 3)).toBeTruthy();
+							expect(segment.isOpenEdge(1, 0)).toBeTruthy();
+							expect(segment.isOpenEdge(1, 1)).toBeTruthy();
+							expect(segment.isOpenEdge(1, 2)).toBeFalsy();
+							expect(segment.isOpenEdge(1, 3)).toBeFalsy();
 							
-							expect(segment.isEdge(2, 0)).toBeFalsy();
-							expect(segment.isEdge(2, 1)).toBeFalsy();
-							expect(segment.isEdge(2, 2)).toBeFalsy();
-							expect(segment.isEdge(2, 3)).toBeTruthy();
+							expect(segment.isOpenEdge(2, 0)).toBeTruthy();
+							expect(segment.isOpenEdge(2, 1)).toBeTruthy();
+							expect(segment.isOpenEdge(2, 2)).toBeTruthy();
+							expect(segment.isOpenEdge(2, 3)).toBeFalsy();
 							
-							expect(segment.isEdge(3, 0)).toBeFalsy();
-							expect(segment.isEdge(3, 1)).toBeFalsy();
-							expect(segment.isEdge(3, 2)).toBeFalsy();
-							expect(segment.isEdge(3, 3)).toBeFalsy();
+							expect(segment.isOpenEdge(3, 0)).toBeTruthy();
+							expect(segment.isOpenEdge(3, 1)).toBeTruthy();
+							expect(segment.isOpenEdge(3, 2)).toBeTruthy();
+							expect(segment.isOpenEdge(3, 3)).toBeTruthy();
 						});// it should return the correct value
 						
 						it('it should return false if trying to access an unknown shape/point', function () {
@@ -1439,9 +1477,42 @@ define(
 								}
 							);
 							
-							expect(segment.isEdge(99, 99)).toBeFalsy();
+							expect(segment.isOpenEdge(99, 99)).toBeFalsy();
 						});// it should return false if trying to access an unknown shape/point
-					});// desc the isEdge function
+					});// desc the isOpenEdge function
+					
+					describe('the edgeLength function', function () {
+						it('it should fetch the length of an edge', function () {
+							var segment = new LevelSegment(
+								Poly2,
+								{
+									data: [
+										[
+											{x: 0, y: 0},
+											{x: 10, y: 0},
+											{x: 10, y: 10},
+											{x: 0, y: 10}
+										],
+										[
+											{x: 10, y: 0},
+											{x: 30, y: 0},
+											{x: 30, y: 10},
+											{x: 10, y: 10}
+										]
+									]
+								}
+							);
+							
+							expect(segment.edgeLength(0, 0)).toEqual(10);
+							expect(segment.edgeLength(0, 1)).toEqual(10);
+							expect(segment.edgeLength(0, 2)).toEqual(10);
+							expect(segment.edgeLength(0, 3)).toEqual(10);
+							expect(segment.edgeLength(1, 0)).toEqual(20);
+							expect(segment.edgeLength(1, 1)).toEqual(10);
+							expect(segment.edgeLength(1, 2)).toEqual(20);
+							expect(segment.edgeLength(1, 3)).toEqual(10);
+						});// it should fetch the length of an edge
+					});// desc the edgeLength function
 					
 					describe('the search function', function () {
 						it('it should allow a LevelSegment to be searched', function () {
