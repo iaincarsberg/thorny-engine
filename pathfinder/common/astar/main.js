@@ -1,4 +1,4 @@
-/*global define*/
+/*global define console*/
 /*
 Usage:
 
@@ -22,10 +22,12 @@ Usage:
 define(
 	[
 		'thorny',
+		'thorny!pathfinder>route',
 		'cjs!underscore'
 	], 
 	function (
 		Thorny,
+		route,
 		underscore
 	) {
 		var AStar;
@@ -44,61 +46,69 @@ define(
 		 * @throws "Thorny Astar: Invalid start or end."
 		 * @throws "Thorny Astar: Cannot find viable path."
 		 */
-		AStar.route = function (from, to, diameter, heuristic) {
-			var open = [],
+		AStar.route = function (level, from, to, diameter, heuristic) {
+			var open   = [],
 				closed = [],
-				costs = {},
-				parent = false,
-				path,
-				fromId,
-				toId,
-				i,	// Used for loop control
-				ii;	// Used for loop delimiting
+				costs  = {},
+				path   = [],
 				
+				/**
+				 * Used to add children to the open list, used as apart of the 
+				 * foreach within the while(true) loop.
+				 * @param array o Contains a location
+				 * @return void
+				 */
+				openAdder = function (o) {
+					if (AStar.isUniqueInList(closed, o)) {
+						return;
+					}
+
+					AStar.addChildrenToOpen(
+						level, 
+						costs, 
+						open, 
+						heuristic, 
+						to, 
+						o, 
+						diameter
+						);
+				};
+			
 			// If no heuristic function was parsed use the default one.
 			if (heuristic === undefined) {
 				heuristic = AStar.calculateHeuristic;
 			}
 			
 			// Add the starting element to the costs and open array.
-			AStar.addToSearch(open, costs, from, heuristic(from, to), false);
+			AStar.addToSearch(level, costs, open, heuristic, to, from);
 			
-			path = [];
 			while (true) {
 				if (from === false) {
-					throw new Error("Thorny Astar: Cannot find viable path.");
+					break;
 				}
 				
 				// Test to see if we're at the end of the path.
-				if (open.length === 0 || (from === to)) {
+				if (open.length === 0 || 
+					(
+						from[0] === to[0] &&
+						from[1] === to[1]
+					)
+				) {
 					path = AStar.minePath(costs, to);
 					break;
 				}
 				
-				for (i = 0, ii = open.length; i < ii; i += 1) {
-					if (AStar.isUniqueInList(closed, open[i])) {
-						continue;
-					}
-					
-					AStar.addChildrenToOpen(
-						open, 
-						costs, 
-						from, 
-						to, 
-						diameter, 
-						heuristic
-						);
-				}
+				// Add the shape's networked neighbours to the open list.
+				underscore.each(open, openAdder);
 				
 				AStar.addUniqueToList(closed, from);
 				open = AStar.removeUniqueFromList(open, from);
-				
 				from = AStar.pickBestFromOpen(open, closed, costs);
 			}
-
-			return path;
-		};//search
-		
+			
+			// Bind functions contained within route to the path array.
+			return route(path);
+		};
 		
 		/**
 		 * Used to add a unique item to either the open or closed array
@@ -109,14 +119,16 @@ define(
 		AStar.addUniqueToList = function (list, item) {
 			var
 				i,	// Used for loop control
-				ii;	// Used for loop delimiting
+				ii, // Used for loop delimiting
+				hash = item.join(':');
 
 			for (i = 0, ii = list.length; i < ii; i += 1) {
-				if (list[i] === item) {
+				if (list[i].join(':') === hash) {
 					return false;
 				}
 			}
-
+			
+			// Makesure the stored item is of style [string, number]
 			list.push(item);
 
 			return true;
@@ -131,10 +143,11 @@ define(
 		AStar.isUniqueInList = function (list, item) {
 			var
 				i,	// Used for loop control
-				ii;	// Used for loop delimiting
+				ii,	// Used for loop delimiting
+				hash = item.join(':');
 
 			for (i = 0, ii = list.length; i < ii; i += 1) {
-				if (list[i] === item) {
+				if (list[i].join(':') === hash) {
 					return true;
 				}
 			}
@@ -151,15 +164,16 @@ define(
 		AStar.removeUniqueFromList = function (list, item) {
 			var
 				i,	// Used for loop control
-				ii;	// Used for loop delimiting
+				ii,	// Used for loop delimiting
+				hash = item.join(':');
 
 			for (i = 0, ii = list.length; i < ii; i += 1) {
-				if (list[i] === item) {
+				if (list[i].join(':') === hash) {
 					return list.slice(0, i).concat(list.slice((i + 1), list.length));
 				}
 			}
 
-			return false;
+			return list;
 		};
 
 		/**
@@ -171,103 +185,155 @@ define(
 		AStar.calculateHeuristic = function (from, to) {
 			return Math.abs(from.getX() - to.getX()) + Math.abs(from.getY() - to.getY());
 		};
+		
+		/**
+		 * Used to estimate the cost to travel from a specific tile, to the goal.
+		 * @param object level Contains the level component we're searching
+		 * @param object costs Contains the costs of any movement we're already componeted
+		 * @param function heuristic Used to extimate the new movement cost
+		 * @param array to Contains the destination
+		 * @param array current Contains out current location
+		 * @param array from Contains the place we came from
+		 * @return float Containing the estimated distance to the goal
+		 */
+		AStar.estimateDistanceToGoal = function (level, costs, heuristic, to, current, from) {
+			var traveled = 0, heur;
+			
+			// If we're coming FROM somewhere, we need to update the currently 
+			// traveled distance.
+			if (from !== undefined) {
+				traveled += level.getDistance(current, from);
+				traveled += (costs[from.join(':')]) ? costs[from.join(':')].traveled : 0;
+			}
+			
+			// Calculate the heuristic
+			heur = heuristic(
+				level.getSegmentShape(current),
+				level.getSegmentShape(to)
+				);
+			
+			// Estimate how much further we have to move till we reach the goal.
+			return [
+				traveled,
+				heur
+			];
+		};
 
 		/**
 		 * Used to add a new record to the costs array
-		 * @param array open Contains all open nodes
-		 * @param array costs Contains search data for this request
-		 * @param object o Contains the new open position
-		 * @param double heuristic Contains the distance between nodes
-		 * @param object parent Contains o's parent
-		 * @param double distanceToParent Contains the distance to the parent
+		 * @param Level level Contains the level were searching
+		 * @param Object costs Contains any previosly processed movement costs
+		 * @param Array open Contains the current open list
+		 * @param Function heuristicFuncion Calculates the heuristic
+		 * @param Array to Contains the destination
+		 * @param Array current Contains the current location
+		 * @param Array from Contains the prior location
 		 * @return void
 		 */
-		AStar.addToSearch = function (open, costs, o, heuristic, parent, distanceToParent) {
-			var
+		AStar.addToSearch = function (level, costs, open, heuristicFuncion, to, current, from) {
+			var traveled,
+				heuristic,
 				toGoal,
-				traveled = 0;
-
-			// Prep our traveled variable
-			if (parent !== false) {
-				traveled = (costs[parent.getId()] !== undefined) ? costs[parent.getId()].traveled : 0;
-				traveled += distanceToParent;
-			}
-
-			// Estimate how much further we have to move till we reach the goal.
-			toGoal = traveled + heuristic;
-
+				estimate = AStar.estimateDistanceToGoal(level, costs, heuristicFuncion, to, current, from), 
+				hash = current.join(':');
+			
+			// Localise the extimate
+			traveled  = underscore.isNaN(estimate[0]) ? 0 : estimate[0];
+			heuristic = underscore.isNaN(estimate[1]) ? 0 : estimate[1];
+			toGoal    = traveled + heuristic;
+			
 			// If the new item is already in the open list, no point trying
 			// to so anything.
-			if (! AStar.addUniqueToList(open, o)) {
-				if (costs[o.getId()] &&
-					traveled < costs[o.getId()].traveled
+			if (! AStar.addUniqueToList(open, current)) {
+				if (costs[hash] &&
+					traveled < costs[hash].traveled
 				) {
-					costs[o.getId()].parent = parent.getId();
-					costs[o.getId()].heuristic = heuristic;
-					costs[o.getId()].traveled = traveled;
-					costs[o.getId()].toGoal = toGoal;
+					costs[hash].from = from;
+					costs[hash].heuristic = heuristic;
+					costs[hash].traveled = traveled;
+					costs[hash].toGoal = toGoal;
+					
+					return true;
 				}
-
+				
 				return false;
 			}
-
+			
 			// If the item already has a costs worked out for it then skip onto 
 			// the next item.
-			if (costs[o.getId()] !== undefined) {
+			if (costs[hash] !== undefined) {
 				return false;
 			}
 
-			costs[o.getId()] = {
-				node: o,
-				parent: (parent === false) ? false : parent.getId(),
-
+			// Store the costs associated with the move
+			costs[hash] = {
+				node: current,
+				from: (from === undefined) ? false : from,
 				heuristic: heuristic,
 				traveled: traveled,
 				toGoal: toGoal
 			};
+			
+			return true;
 		};
 
 		/**
-		 * Used to add all a nodes child elements to the open array.
-		 * @param array network Contains all connections between nodes
-		 * @param array open Contains all open nodes
-		 * @param array costs Contains search data for this request
-		 * @param object from Contains the current location
-		 * @param object to   Contains the target location
-		 * @param int diameter Contains the diameter of an entity moving
-		 * @param function findHeuristic Contains the heuristic function to use.
-		 * though the network.
+		 * Used to add all nodes that are networked to an element to the open array.
+		 * @param 
+		 * @param 
+		 * @param 
+		 * @param 
 		 * @return void
 		 */
-		AStar.addChildrenToOpen = function (open, costs, from, to, diameter, findHeuristic) {
-			var
-				neighbours = from.getNeightbours(),
-				neighbour,// Contains a single node from the collection
-				i,	// Used for loop control
-				ii;	// Used for loop delimiting
+		AStar.addChildrenToOpen = function (level, costs, open, heuristicFuncion, to, current, diameter) {
+			var neighbours   = level.getNeighbours.apply(level, current),
+				segment      = level.getSegment(current[0]),
+				currentEdges = segment.data('edges')[current[1]],
+				edgeLengths  = segment.data('edge-lengths'),
+				length;
+			
+			// Loop over each of the neighbours, and add them to the open list
+			// if they don't already exist.
+			underscore.each(neighbours, function (neighbour) {
+				// If the diameter is set, then check to see if the edge is
+				// wide enough to support an entity of this size moving 
+				// through it as it navigates this network.
+				if (diameter !== undefined) {
+					length = false;
 
-			while ((neighbour = neighbours.step())) {
-				// If the diameter is unset, or the diameter is larger than the
-				// edge width skip this child.
-				if (neighbour.details.edgeWidth !== undefined && 
-					neighbour.details.edgeWidth !== false &&
-					diameter !== undefined
-				) {
-					if (diameter > neighbour.details.edgeWidth) {
-						continue;
+					// Before we add the shape to the search, we need to first 
+					// find the length of the edge joining these two shapes.
+					underscore.each(currentEdges, function (edge) {
+						if (edge &&
+							edge[0] === neighbour[0] &&
+							edge[1] === neighbour[1]
+						) {
+							length = edgeLengths[edge[1]][edge[2]];
+						}
+					});
+					
+					// If the diameter is greater than the length of this edge,
+					// then we cannot add this network to the search.
+					if (length !== false &&
+						diameter > length
+					) {
+						return false;
 					}
 				}
-
+				
 				// Add the neighbouring node to the open list.
 				AStar.addToSearch(
-					open,
-					costs,
-					neighbour.node,
-					findHeuristic(from, neighbour.node),
-					from,
-					neighbour.details.distanceTo
+					level, 
+					costs, 
+					open, 
+					heuristicFuncion, 
+					to, 
+					neighbour, 
+					current
 				);
-			}
+			});
+			
+			return true;
 		};
 
 		/**
@@ -278,30 +344,30 @@ define(
 		 * @return object Containing the best location to start the next search.
 		 */
 		AStar.pickBestFromOpen = function (open, closed, costs) {
-			var 
-				bestO = false,
-				bestToGoal = false,
-				o,
-				toGoal,
-				i,	// Used for loop control
-				ii;	// Used for loop delimiting
-
-			for (i = 0, ii = open.length; i < ii; i += 1) {
-				o = open[i];
-
+			var bestO, bestToGoal, toGoal;
+			
+			// Default the values
+			bestO = bestToGoal = false;
+			
+			underscore.each(open, function (o) {
 				// Check to see if this node has already need closed.
 				if (AStar.isUniqueInList(closed, o)) {
-					continue;
+					return;
 				}
-
-				toGoal = costs[o.getId()].toGoal;
-
-				if (bestToGoal === false || bestToGoal >= toGoal) {
+				
+				// Localise the distance to the goal.
+				toGoal = costs[o.join(':')].toGoal;
+				
+				// Check to see if this toGoal value is an improvement over 
+				// the previous best.
+				if (bestToGoal === false || 
+					bestToGoal >= toGoal
+				) {
 					bestO = o;
 					bestToGoal = toGoal;
 				}
-			}
-
+			});
+			
 			return bestO;
 		};
 
@@ -317,8 +383,13 @@ define(
 				route = [];
 			}
 
-			var next = costs[costs[goal.getId()].parent];
-
+			var next, 
+				hash = goal.join(':');
+			
+			if (costs[hash] && costs[hash].from) {
+				next = costs[costs[hash].from.join(':')];
+			}
+			
 			if (next === undefined) {
 				route.push(goal);
 				return route.reverse();
