@@ -8,6 +8,7 @@ define(
 		'thorny!level>main',
 		'thorny!level>level-segment',
 		'thorny!math/poly2',
+		'thorny!math/tile2',
 		'cjs!underscore'
 	],
 	function (
@@ -18,6 +19,7 @@ define(
 		Level,
 		LevelSegment,
 		Poly2,
+		Tile2,
 		underscore
 	) {	
 		describe('The Level Base Object', function () {
@@ -41,6 +43,7 @@ define(
 					expect(typeof level.getSegment).toEqual('function');
 					expect(typeof level.removeSegment).toEqual('function');
 					expect(typeof level.getSegmentFormat).toEqual('function');
+					expect(typeof level.getSegmentFormatObject).toEqual('function');
 					expect(typeof level.search).toEqual('function');
 				});// it should have the following functions
 				
@@ -183,10 +186,10 @@ define(
 								segment = level.getSegment('003');
 								
 								// Makesure the edge is replaced
-								expect(segment.isEdge(0, 0)).toBeTruthy();
-								expect(segment.isEdge(0, 1)).toBeTruthy();
-								expect(segment.isEdge(0, 2)).toBeTruthy();
-								expect(segment.isEdge(0, 3)).toBeTruthy();
+								expect(segment.isOpenEdge(0, 0)).toBeFalsy();
+								expect(segment.isOpenEdge(0, 1)).toBeFalsy();
+								expect(segment.isOpenEdge(0, 2)).toBeFalsy();
+								expect(segment.isOpenEdge(0, 3)).toBeFalsy();
 								
 								// Makesure the level has un-networked the
 								// recently deleted LevelSegment.
@@ -217,6 +220,44 @@ define(
 							expect(level.getSegmentFormat()).toEqual('thorny!math/vector2');
 						});// it should allow the segment format to be replaced on level instantiation
 					});// desc the getSegmentFormat function
+					
+					describe('the getSegmentFormatObject function', function () {
+						it('it should return the required segment format(Poly2)', function () {
+							var level, ran = false;
+							
+							level = new Level({
+								format: 'thorny!math/poly2'
+							});
+							
+							level.getSegmentFormatObject(function (object) {
+								expect(object).toEqual(Poly2);
+								
+								ran = true;
+							});
+							
+							waitsFor(function () {
+								return ran;
+							});
+						});// it should return the required segment format(Poly2)
+						
+						it('it should return the required segment format(Tile2)', function () {
+							var level, ran = false;
+							
+							level = new Level({
+								format: 'thorny!math/tile2'
+							});
+							
+							level.getSegmentFormatObject(function (object) {
+								expect(object).toEqual(Tile2);
+								
+								ran = true;
+							});
+							
+							waitsFor(function () {
+								return ran;
+							});
+						});// it should return the required segment format(Tile2)
+					});// desc the getSegmentFormatObject function
 					
 					describe('the search function', function () {
 						it('it should search the Level Entity for a specific shape within its LevelSegment', function () {
