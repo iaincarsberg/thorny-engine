@@ -16,6 +16,7 @@ define(
 					expect(typeof Poly2.findAngles).toEqual('function');
 					expect(typeof Poly2.findDistanceFromLineSegment).toEqual('function');
 					expect(typeof Poly2.getLength).toEqual('function');
+					expect(typeof Poly2.findEdgeIntersectionPoint).toEqual('function');
 				});// it should have a number of helper functions, and Compose.js helpers
 				
 				describe('discribe', function () {
@@ -43,6 +44,64 @@ define(
 							expect(Poly2.getLength(poly2)).toEqual(6);
 						});// it should return the number of Vector2s in a complex Poly2
 					});// desc the getLength function
+					
+					describe('the findEdgeIntersectionPoint function', function () {
+						it('it should find the midpoint in edge', function () {
+							expect(
+								Poly2.findEdgeIntersectionPoint(
+									new Vector2(5, 5),
+									new Vector2(1, 0),
+									new Vector2(1, 10)
+								)
+								.getIntegerCoords()
+							).toEqual([1, 5]);
+							
+							expect(
+								Poly2.findEdgeIntersectionPoint(
+									new Vector2(5, 5),
+									new Vector2(1, 1),
+									new Vector2(10, 1)
+								)
+								.getIntegerCoords()
+							).toEqual([5, 1]);
+							
+							expect(
+								Poly2.findEdgeIntersectionPoint(
+									new Vector2(10, 0),
+									new Vector2(0, 0),
+									new Vector2(10, 10)
+								)
+								.getIntegerCoords()
+							).toEqual([5, 5]);
+							
+							expect(
+								Poly2.findEdgeIntersectionPoint(
+									new Vector2(0, 10),
+									new Vector2(0, 0),
+									new Vector2(10, 10)
+								)
+								.getIntegerCoords()
+							).toEqual([5, 5]);
+							
+							expect(
+								Poly2.findEdgeIntersectionPoint(
+									new Vector2(0, 0),
+									new Vector2(10, 0),
+									new Vector2(0, 10)
+								)
+								.getIntegerCoords()
+							).toEqual([5, 5]);
+							
+							expect(
+								Poly2.findEdgeIntersectionPoint(
+									new Vector2(10, 10),
+									new Vector2(10, 0),
+									new Vector2(0, 10)
+								)
+								.getIntegerCoords()
+							).toEqual([5, 5]);
+						});// it should find the midpoint in edge
+					});// desc the findEdgeIntersectionPoint function
 				});// desc discribe
 			});// desc before instantiation
 			

@@ -3,14 +3,19 @@ define(
 	[
 		'thorny',
 		'thorny!math/vector2',
+		'thorny!math/circle2',
 		'compose'
 	], 
 	function (
 		Thorny,
 		Vector2,
+		Circle2,
 		Compose
 	) {
-		var Poly2 = Thorny.extend(
+		var Poly2, radDeg;
+
+		radDeg = (180 / Math.PI);
+		Poly2 = Thorny.extend(
 			function () {
 				var 
 					i,// Used for loop control
@@ -292,6 +297,76 @@ define(
 			}
 			
 			return poly2.data('vector2s').length;
+		};
+		
+		/**
+		 * Used to find the closest point of intersection between a line and 
+		 * a vector.
+		 * @param object goal Contains the Vector2 we're intersted in finding 
+		 *        the product pointing to the edge1/edge2 line.
+		 * @param object edge1 Contains one of the edges involved with the collision
+		 * @param object edge2 Contains one of the edges involved with the collision 
+		 * @return Vector2 Containing the point of projected intersection.
+		 */
+		Poly2.findEdgeIntersectionPoint = function (goal, edge1, edge2) {
+			var angles = Poly2.findAngles(edge1, edge2, goal),
+				distance = Poly2.findDistanceFromLineSegment(angles, goal, edge1, edge2),
+				midpoint,
+				intersect,
+				edgeDistance,
+				mpEdge0,
+				mpEdge1;
+			
+			// Check to makesure we have a valid distance.
+			if (distance === false) {
+				return false;
+			}
+
+			// Check to see if the distance was inside of the original projection
+			// if it wasn't then we need to return the closest vector.
+			if (distance.insideProjection === false) {
+				if (edge1.distance(goal) > edge2.distance(goal)) {
+					return edge2;
+				}
+				return edge1;
+			}
+
+			// Find where the midpoint is on the collided edge, this 
+			// tells us how far along an edge the collision was.
+			midpoint = Math.sin((90 - (angles[0] * radDeg)) / radDeg) * edge1.distance(goal);
+
+			// Find the intersection point for the goal based on 
+			// the edge.
+			intersect = Circle2.circleCircleIntersection(
+				edge1.getX(), edge1.getY(), midpoint,
+				goal.getX(),  goal.getY(),  distance.distance
+			);
+			
+			// If there was an intersection then we need to deal 
+			// with it.
+			if (intersect) {
+				// Find the best possible midpoint ana return that
+				// line intersection
+				edgeDistance = edge1.distance(edge2);
+				mpEdge0 = (edge1.distance(intersect[0]) + edge2.distance(intersect[0])) - edgeDistance;
+				mpEdge1 = (edge1.distance(intersect[1]) + edge2.distance(intersect[1])) - edgeDistance;
+
+				if (mpEdge0 < 0) {
+					mpEdge0 *= -1;
+				}
+				
+				if (mpEdge1 < 0) {
+					mpEdge1 *= -1;
+				}
+
+				if (mpEdge0 < mpEdge1) {
+					return intersect[0];
+
+				} else {
+					return intersect[1];
+				}
+			}
+			return false;
 		};
 		
 		// Make the Poly2 available to the big wide world!
