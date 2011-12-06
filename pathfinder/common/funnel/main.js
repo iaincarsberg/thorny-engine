@@ -236,20 +236,107 @@ define(
 					false
 					);
 				
-				if (intersection instanceof Vector2) {
-					route.push(
-						intersection
-						);
-						
-				} else {
-					// If there is no intersection, we push the last valid one
-					// back in, as we NEED the edges and points arrays to have
-					// the same lengths.
-					route.push(route[route.length - 1]);
-				}
+				route.push(
+					intersection
+					);
 			});
 			
 			return route;
+		};
+		
+		/**
+		 * Used to see if the goal has already been visited.
+		 * @param Vector2 goal Contains the current movement goal
+		 * @param array route Contains a list of Vector2s that make up the route
+		 * @return boolean true if goal is in route
+		 */
+		Funnel.goalInArray = function (goal, data) {
+			var inRoute = false;
+			underscore.each(data, function (v2, id) {
+				if (inRoute) {
+					return;
+				}
+				
+				if (goal.sameAs(v2)) {
+					inRoute = {id: id};
+				}
+			});
+			
+			return inRoute;
+		};
+		
+		Funnel.hasEdgeIntersection = function (from, to, edges) {
+			var hasIntersection = false,
+				i,
+				ii,
+				intersection;
+
+			for (i = 1, ii = edges.length; i < ii; i += 1) {
+				if (from.sameAs(edges[i]) ||
+					from.sameAs(edges[i - 1]) ||
+					to.sameAs(edges[i]) ||
+					to.sameAs(edges[i - 1])
+				) {
+					continue;
+				}
+				
+				// Check for the intersection.
+				intersection = Vector2.lineIntersection(
+					from,
+					to,
+					edges[i],
+					edges[i - 1]
+					);
+				
+				if (intersection) {
+					hasIntersection = true;
+				}
+			}
+			
+			return hasIntersection;
+		};
+		
+		/******/
+		Funnel.hasRadialIntersection = function (from, to, edges, points) {
+			var hasIntersection = false;
+			
+			// Start
+			underscore.each(edges, function (edge, id) {
+				var point = points[id],
+					intersection;
+
+				if (! point ||
+					from.sameAs(edge) ||
+					from.sameAs(point) ||
+					to.sameAs(edge) ||
+					to.sameAs(point)
+				) {
+					return;
+				}
+
+				// Check for the intersection.
+				intersection = Vector2.lineIntersection(
+					from,
+					to,
+					edge,
+					point
+					);
+				
+				/*
+				console.log(
+					[
+						edge.getIntegerCoords(),
+						point.getIntegerCoords()
+					]
+				);
+				*/
+
+				if (intersection) {
+					hasIntersection = true;
+				}
+			});
+			
+			return hasIntersection;
 		};
 		
 		/**
@@ -259,167 +346,84 @@ define(
 		 * @return array Containing a path through the funnel
 		 */
 		Funnel.process = function (edges, points, toX, toY) {
-			var route = [];
-			
 			Funnel.data.destination
 				.setX(toX)
 				.setY(toY);
 			
-			console.log(
-				Funnel.data.destination.getSimpleCoords()
-				);
+			var route = [],
+				from = edges[0],
+				bestVector2,
+				bestDistance;
+			
+			route.push(from);
+			
+			points = points.concat(Funnel.data.destination);
+			
+			while (true) {
+				bestVector2 = false;
+				bestDistance = false;
+				
+				console.log('');
+				underscore.each(points, function (point, pointId) {
+					var eIntersection,
+						rIntersection,
+						distance;
+
+					if (! point ||
+						from.sameAs(point) ||
+						Funnel.goalInArray(point, route)
+					) {
+						return;
+					}
+
+					eIntersection = Funnel.hasEdgeIntersection(
+						from,
+						point,
+						edges
+						);
+					rIntersection = Funnel.hasRadialIntersection(
+						from,
+						point,
+						edges,
+						points
+						);
+
+					if (eIntersection || rIntersection) {
+						return;
+					}
+
+					distance = point.distance(Funnel.data.destination) + point.distance(from);
+					
+					
+
+					// return;
+					console.log(
+						0, 
+						'to', 
+						pointId,
+						distance,
+						point.distance(from)
+						);
+						
+					if (bestDistance === false ||
+						distance < bestDistance
+					) {
+						bestDistance = distance;
+						bestVector2 = point;
+					}
+				});
+
+				if (bestVector2) {
+					route.push(bestVector2);
+					from = bestVector2;
+					
+					if (from.sameAs(Funnel.data.destination)) {
+						break;
+					}
+				}
+			}
 			
 			return route;
-			/*
-			funnel: function (from, to, edges, points) {
-				var
-					size = edges.length,
-					nodes = [],
-					node = $('thorny level node'),
-					v2 = $('thorny math vector2'),
-					lineIntersection = $('thorny math vector2')
-						.lineIntersection,// Contains the intersection function
-					fromV2,
-					toV2,
-					distance,
-					i,	// Used for loop control
-					ii,	// Used for loop delimiting
-					j,	// Used for loop control
-					jj,	// Used for loop delimiting
-					
-					isValidLink = function (node_from, node_to) {
-						var
-							intersect,
-							rk,
-							k,	// Used for loop control
-							kk;	// Used for loop delimiting
-						
-						for (k = 0, kk = size; k < kk; k += 1) {
-							rk = (k + 1) % size;
-							
-							// Check for edge intersections
-							if (lineIntersection(node_from, node_to, edges[k], edges[rk]) !== false) {
-								return false;
-							}
-							
-							// Check for intersections between the point and the projection
-							if (! (i === k  || j === k)) {
-								if (lineIntersection(node_from, node_to, points[k], edges[k]) !== false) {
-									return false;
-								}
-							}
-						}
-						return true;
-					};
-				
-				// Turn the from and to points into a node
-				fromV2 = node.factory(from.clone(), 'funnel', 'from');
-				toV2 = node.factory(to.clone(), 'funnel', 'to');
-				
-				// Turn all of the points into a node list
-				for (i = 0, ii = size; i < ii; i += 1) {
-					nodes.push(
-						node.factory(
-							points[i].clone(),
-							'funnel',
-							i
-						)
-					);
-				}
-				
-				// Create the network links between each of the pointifyed nodes
-				for (i = 0, ii = size; i < ii; i += 1) {
-					for (j = 0, jj = size; j < jj; j += 1) {
-						if (i === j) {
-							continue;
-						}
-						if (isValidLink(nodes[i], nodes[j])) {
-							distance = nodes[i].distance(nodes[j]);
-							
-							nodes[i].addNeighbour(nodes[j], {
-								distanceTo: distance
-							});
-							
-							nodes[j].addNeighbour(nodes[i], {
-								distanceTo: distance
-							});
-						}
-					}
-				}
-				
-				// Network the from and to points in with the rest of the shape
-				j = false;
-				if (isValidLink(fromV2, toV2)) {
-					distance = fromV2.distance(toV2);
-					fromV2.addNeighbour(toV2, {
-						distanceTo: distance
-					});
-					toV2.addNeighbour(fromV2, {
-						distanceTo: distance
-					});
-				}
-				for (i = 0, ii = size; i < ii; i += 1) {
-					if (isValidLink(fromV2, nodes[i])) {
-						distance = fromV2.distance(nodes[i]);
-						fromV2.addNeighbour(nodes[i], {
-							distanceTo: distance
-						});
-						nodes[i].addNeighbour(fromV2, {
-							distanceTo: distance
-						});
-					}
-				}
-				for (i = 0, ii = size; i < ii; i += 1) {
-					if (isValidLink(toV2, nodes[i])) {
-						distance = toV2.distance(nodes[i]);
-						toV2.addNeighbour(nodes[i], {
-							distanceTo: distance
-						});
-						nodes[i].addNeighbour(toV2, {
-							distanceTo: distance
-						});
-					}
-				}
-//				/ *
-//				// Debugging code, to show whats going on inside the funnel
-//				// algorithum during the path find process.
-//				if (renderer) {
-//					(function (renderer, nodes, fromV2, toV2) {
-//						var
-//							path,
-//							node,
-//							nes,
-//							ne,
-//							i,	// Used for loop control
-//							ii;	// Used for loop delimiting
-//
-//						for (i = 0, ii = nodes.length; i < ii; i += 1) {
-//							path = [];
-//							node = nodes[i];
-//							nes = node.getNeightbours();
-//							
-//							while ((ne = nes.step())) {
-//								path.push(node);
-//								path.push(ne.node);
-//								path.push(node);
-//							}
-//							
-//							renderer.add('path', path);
-//						}
-//					}(renderer, nodes, fromV2, toV2));
-//				}
-//				* /
-				
-				return $('thorny level pathfinder astar').search(
-					fromV2,
-					toV2,
-					undefined,
-					function (from, to) {
-						return from.distance(to);
-					}
-				);
-			},//funnel
-			*/
 		};
 		
 		return Funnel;

@@ -302,7 +302,7 @@ define(
 										level,
 										level.search(10, 10),
 										level.search(390, 290),
-										30
+										20
 										);
 									
 									edges = Funnel.edgeify(
@@ -315,7 +315,8 @@ define(
 										290
 										);
 									
-									points = Funnel.pointify(edges, 30);
+									points = Funnel.pointify(edges, 20);
+									route = Funnel.process(edges, points, 390, 290);
 									
 									(function () {
 										var es = [], ps = [];
@@ -324,6 +325,9 @@ define(
 											es.push(edge.getIntegerCoords());
 										});
 										underscore.each(points, function (point) {
+											if (point === false) {
+												return;
+											}
 											ps.push(point.getIntegerCoords());
 										});
 										
@@ -332,9 +336,16 @@ define(
 										console.log(JSON.stringify(ps));
 									}());
 									
-									route = Funnel.process(edges, points, 390, 290);
+									(function () {
+										var ro = [], roo = [];
+										underscore.each(route, function (pt) {
+											ro.push(pt.getIntegerCoords());
+											roo.push(pt.getIntegerCoords());
+										});
+
+										console.log(JSON.stringify(ro.concat(roo.reverse())));
+									}());
 									
-									console.log(JSON.stringify(route));
 									
 									ran = true;
 								});
